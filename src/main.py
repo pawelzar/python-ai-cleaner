@@ -63,6 +63,7 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
+            break
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 if cleaner_x > 0:

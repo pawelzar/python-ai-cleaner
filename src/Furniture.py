@@ -1,4 +1,4 @@
-import Object
+from src.object import *
 
 
 class Furniture(Object):

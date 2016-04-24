@@ -6,5 +6,5 @@ class Object(object):
         self.pos_x = x
         self.pos_y = y
 
-    def getPosition(self):
+    def get_position(self):
         return [self.pos_x, self.pos_y]

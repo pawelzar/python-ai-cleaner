@@ -1,23 +1,7 @@
 import pygame
+from src.settings import *
 from random import randrange
 
-# Define some colors
-BLACK = (0, 0, 0)
-GREY = (80, 80, 80)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-
-# Set width and height of one cell in grid
-CELL_WIDTH = 30
-CELL_HEIGHT = 30
-
-# Set number of rows and columns in grid
-NUM_ROWS = 20
-NUM_COLS = 30
-
-# Set margin between each cell
-MARGIN = 1
 
 grid = []
 for row in range(NUM_ROWS):
@@ -27,29 +11,25 @@ for row in range(NUM_ROWS):
 
 # Initialize pygame
 pygame.init()
-
-# Set the height and width of the screen
-size = [CELL_WIDTH * NUM_COLS, CELL_HEIGHT * NUM_ROWS]
-screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode(SIZE)
 
 pygame.display.set_caption("PRO CLEANER 9000")
-done = False
 clock = pygame.time.Clock()
 
-cell_image = pygame.image.load("../images/floor_cell.jpg").convert()
-cleaner_image = pygame.image.load("../images/cleaner.png").convert()
+cell_image = pygame.image.load("../images/floor_cell.jpg").convert_alpha()
+cleaner_image = pygame.image.load("../images/cleaner.png").convert_alpha()
 cleaner_image.set_colorkey(BLACK)
 
-dirt_dust_image = pygame.image.load("../images/dirt_dust.png").convert()
+dirt_dust_image = pygame.image.load("../images/dirt_dust.png").convert_alpha()
 dirt_dust_image.set_colorkey(BLACK)
-dirt_water_image = pygame.image.load("../images/dirt_water.png").convert()
+dirt_water_image = pygame.image.load("../images/dirt_water.png").convert_alpha()
 dirt_water_image.set_colorkey(BLACK)
-dirt_cat_image = pygame.image.load("../images/dirt_cat.png").convert()
+dirt_cat_image = pygame.image.load("../images/dirt_cat.png").convert_alpha()
 dirt_cat_image.set_colorkey(BLACK)
 
-furniture_chair_image = pygame.image.load("../images/furniture_chair.png").convert()
+furniture_chair_image = pygame.image.load("../images/furniture_chair.png").convert_alpha()
 furniture_chair_image.set_colorkey(BLACK)
-furniture_sofa_image = pygame.image.load("../images/furniture_sofa.png").convert()
+furniture_sofa_image = pygame.image.load("../images/furniture_sofa.png").convert_alpha()
 furniture_sofa_image.set_colorkey(BLACK)
 
 position_chair = [60, 90]
@@ -73,7 +53,10 @@ for x, y in position_dirt_cat:
     grid[x][y] = 3
 
 for row in grid:
-    print " ".join({0: '-'}.get(x, str(x)) for x in row), " ".join(str(x) for x in row)
+    print(" ".join({0: '-'}.get(x, str(x)) for x in row), " ".join(str(x) for x in row))
+
+
+done = False
 
 # -------- Main Program Loop -----------
 while not done:

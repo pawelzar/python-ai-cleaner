@@ -1,20 +1,21 @@
 import pygame
+
+from src.draw import draw_grid
+from src.graph import SquareGrid
 from src.screen_settings import *
 from random import randrange
 
 
-grid = []
-for row in range(NUM_ROWS):
-    grid.append([])
-    for column in range(NUM_COLS):
-        grid[row].append(0)
+# Initialize board
+GRID = SquareGrid(NUM_COLS, NUM_ROWS)
 
-# Initialize pygame
+# Initialize display
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
 pygame.display.set_caption("PRO CLEANER 9000")
 clock = pygame.time.Clock()
 
+# Load images
 cell_image = pygame.image.load("../images/floor_cell.jpg").convert_alpha()
 cleaner_image = pygame.image.load("../images/cleaner.png").convert_alpha()
 cleaner_image.set_colorkey(BLACK)
@@ -37,31 +38,33 @@ position_sofa = [300, 300]
 background_position = [0, 0]
 cleaner_x = 210
 cleaner_y = 210
+print(furniture_chair_image.get_rect())
+print(furniture_sofa_image.get_rect())
+
 
 position_dirt_dust = [(randrange(0, NUM_ROWS, 1), randrange(0, NUM_COLS, 1)) for _ in range(20)]
 position_dirt_water = [(randrange(0, NUM_ROWS, 1), randrange(0, NUM_COLS, 1)) for _ in range(20)]
 position_dirt_cat = [(randrange(0, NUM_ROWS, 1), randrange(0, NUM_COLS, 1)) for _ in range(20)]
 
 for x, y in position_dirt_dust:
-    grid[x][y] = 1
+    GRID.add_object((x, y), '1')
 
 for x, y in position_dirt_water:
-    grid[x][y] = 2
+    GRID.add_object((x, y), '2')
 
 for x, y in position_dirt_cat:
-    grid[x][y] = 3
+    GRID.add_object((x, y), '3')
 
-for row in grid:
-    print(" ".join({0: '-'}.get(x, str(x)) for x in row), " ".join(str(x) for x in row))
+draw_grid(GRID)
 
 
-done = False
+play = True
 
 # -------- Main Program Loop -----------
-while not done:
+while play:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            done = True
+            play = False
             break
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
@@ -81,20 +84,20 @@ while not done:
     screen.fill(GREY)
 
     # Draw the grid
-    #for row in range(NUM_ROWS):
-    #   for column in range(NUM_COLS):
-    #        screen.blit(cell_image, [row * CELL_WIDTH, column * CELL_HEIGHT])
+    for row in range(NUM_ROWS):
+        for column in range(NUM_COLS):
+            screen.blit(cell_image, [column * CELL_WIDTH, row * CELL_HEIGHT])
 
     for row in range(NUM_ROWS):
         for column in range(NUM_COLS):
-            if grid[row][column] == 1:
+            item = GRID.objects.get((row, column), "")
+            if item == '1':  # grid[row][column] == 1:
                 screen.blit(dirt_dust_image, [column * CELL_WIDTH, row * CELL_HEIGHT])
-            elif grid[row][column] == 2:
+            elif item == '2':  # grid[row][column] == 2:
                 screen.blit(dirt_water_image, [column * CELL_WIDTH, row * CELL_HEIGHT])
-            elif grid[row][column] == 3:
+            elif item == '2':  # grid[row][column] == 3:
                 screen.blit(dirt_cat_image, [column * CELL_WIDTH, row * CELL_HEIGHT])
 
-    pygame.draw.circle(screen, BLACK, [45, 15], 15)
     screen.blit(furniture_chair_image, position_chair)
     screen.blit(furniture_sofa_image, position_sofa)
     screen.blit(cleaner_image, [cleaner_x, cleaner_y])

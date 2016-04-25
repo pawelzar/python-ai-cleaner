@@ -1,13 +1,11 @@
-from src.object import *
-
-
-class Furniture(Object):
+class Furniture(object):
     width = 0
     length = 0
     height_from_floor = 0
+    position = ()
 
     def __init__(self, x, y, width, length, height):
-        super(self, x, y)
+        self.position = (x, y)
         self.width = width
         self.length = length
         self.height_from_floor = height

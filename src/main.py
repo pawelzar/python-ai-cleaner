@@ -1,5 +1,5 @@
 import pygame
-from src.settings import *
+from src.screen_settings import *
 from random import randrange
 
 
@@ -12,7 +12,6 @@ for row in range(NUM_ROWS):
 # Initialize pygame
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
-
 pygame.display.set_caption("PRO CLEANER 9000")
 clock = pygame.time.Clock()
 
@@ -95,7 +94,7 @@ while not done:
             elif grid[row][column] == 3:
                 screen.blit(dirt_cat_image, [column * CELL_WIDTH, row * CELL_HEIGHT])
 
-    pygame.draw.circle(screen, BLACK, [45,15], 15)
+    pygame.draw.circle(screen, BLACK, [45, 15], 15)
     screen.blit(furniture_chair_image, position_chair)
     screen.blit(furniture_sofa_image, position_sofa)
     screen.blit(cleaner_image, [cleaner_x, cleaner_y])

@@ -1,5 +1,7 @@
 def draw_tile(graph, id, style, width):
     r = "-"
+    if id in graph.objects: r = graph.objects[id] * width
+    if id in graph.obstacles: r = graph.obstacles[id] * width
     if 'number' in style and id in style['number']: r = "%d" % style['number'][id]
     if 'point_to' in style and style['point_to'].get(id, None) is not None:
         (x1, y1) = id
@@ -11,8 +13,6 @@ def draw_tile(graph, id, style, width):
     if 'start' in style and id == style['start']: r = "A"
     if 'goal' in style and id == style['goal']: r = "Z"
     if 'path' in style and id in style['path']: r = "@"
-    if id in graph.obstacles: r = graph.obstacles[id] * width
-    if id in graph.objects: r = graph.objects[id] * width
     return r
 
 

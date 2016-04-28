@@ -1,0 +1,2 @@
+class TestPriorityQueue:
+    pass

@@ -1,15 +1,20 @@
-class Furniture(object):
-    width = 0
-    length = 0
-    height_from_floor = 0
-    position = ()
+import pygame
 
-    def __init__(self, x, y, width, length, height):
-        self.position = (x, y)
-        self.width = width
-        self.length = length
-        self.height_from_floor = height
 
-    def set_position(self, x, y):
-        self.super.x = x
-        self.super.y = y
+class Furniture:
+    def __init__(self, pos_x, pos_y, image_path):
+        self.position = (pos_x, pos_y)
+        self.name = image_path
+        self.image = pygame.image.load(image_path).convert_alpha()
+
+    def __string__(self):
+        return self.name
+
+    def set_position(self, pos_x, pos_y):
+        self.position = (pos_x, pos_y)
+
+    def get_position(self):
+        return self.position
+
+    def get_image(self):
+        return self.image

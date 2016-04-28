@@ -1,3 +1,6 @@
+from screen_settings import *
+
+
 class Grid:
     def __init__(self, width, height):
         self.width = width
@@ -37,3 +40,19 @@ class GridWithWeights(Grid):
 
     def add_weight(self, point, weight):
         self.weights[point] = weight
+
+
+class GameBoard(GridWithWeights):
+    def __init__(self, width, height):
+        super().__init__(width, height)
+        self.furnitures = []
+
+    def add_furniture(self, furniture):
+        self.furnitures.append(furniture)
+        for row in range(furniture.image.get_width() // CELL_WIDTH):
+            for column in range(furniture.image.get_height() // CELL_HEIGHT):
+                self.add_obstacle([(furniture.position[0] // CELL_WIDTH + row,
+                                    furniture.position[1] // CELL_HEIGHT + column)])
+
+    def add_agent(self, agent):
+        pass

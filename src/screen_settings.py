@@ -1,5 +1,6 @@
 # Define some colors
 BLACK = (0, 0, 0)
+DARK = (40, 40, 40)
 GREY = (80, 80, 80)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)

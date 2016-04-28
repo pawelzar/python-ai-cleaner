@@ -49,7 +49,7 @@ class GameBoard(GridWithWeights):
         self.furniture.append(furniture)
         for row in range(furniture.get_width()):
             for column in range(furniture.get_height()):
-                self.add_obstacle((furniture.get_x() + row, furniture.get_y() + column))
+                self.add_obstacle((furniture.pos_x() + row, furniture.pos_y() + column))
 
     def add_dirt(self, dirt):
         self.dirt.append(dirt)

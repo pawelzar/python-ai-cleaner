@@ -116,6 +116,7 @@ while play:
                 if BOARD.agent.pos_y() < CELL_HEIGHT * (NUM_ROWS - 1):
                     BOARD.agent.move(0, 1)
 
+            # Some predefined settings
             if event.key == pygame.K_1:
                 BOARD.agent.position = (0, 0)
                 point_goal = (0, 8)
@@ -128,6 +129,7 @@ while play:
                 BOARD.agent.position = (0, 0)
                 point_goal = (11, 13)
 
+            # Present the work of the algorithm
             if event.key == pygame.K_END:
                 came_from, cost_so_far = a_star_search(BOARD, BOARD.agent.position, point_goal)
                 reconstruction = reconstruct_path(came_from, start=BOARD.agent.position, goal=point_goal)
@@ -140,6 +142,8 @@ while play:
                     screen.blit(cleaner_image, (x * CELL_WIDTH, y * CELL_HEIGHT))
                     pygame.display.flip()
                     pygame.time.wait(100)
+
+                BOARD.agent.position = point_goal
 
     # Set the screen background
     screen.fill(GREY)
@@ -155,12 +159,12 @@ while play:
     for furniture in BOARD.furniture:
         screen.blit(images[furniture.name], furniture.real_position())
 
-    screen.blit(images["agent"], BOARD.agent.real_position())
-
     pygame.draw.line(screen, GREY, [(point_goal[0] + 0.5) * CELL_WIDTH - 1, point_goal[1] * CELL_HEIGHT],
                      [(point_goal[0] + 0.5) * CELL_WIDTH - 1, (point_goal[1] + 1) * CELL_HEIGHT - 1], 4)
     pygame.draw.line(screen, GREY, [point_goal[0] * CELL_WIDTH, (point_goal[1] + 0.5) * CELL_HEIGHT - 1],
                      [(point_goal[0] + 1) * CELL_WIDTH - 1, (point_goal[1] + 0.5) * CELL_HEIGHT - 1], 4)
+
+    screen.blit(images["agent"], BOARD.agent.real_position())
 
     clock.tick(60)
     pygame.display.flip()

@@ -5,15 +5,15 @@ class Grid:
         self.obstacles = {}
         self.objects = {}
 
-    def in_bounds(self, id):
-        (x, y) = id
+    def in_bounds(self, point):
+        (x, y) = point
         return 0 <= x < self.width and 0 <= y < self.height
 
-    def passable(self, id):
-        return id not in self.obstacles
+    def passable(self, point):
+        return point not in self.obstacles
 
-    def neighbors(self, id):
-        (x, y) = id
+    def neighbors(self, point):
+        (x, y) = point
         results = [(x+1, y), (x, y-1), (x-1, y), (x, y+1)]
         results = filter(self.in_bounds, results)
         results = filter(self.passable, results)

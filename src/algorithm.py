@@ -1,17 +1,6 @@
 from src.priority_queue import *
 
 
-def reconstruct_path(came_from, start, goal):
-    """Return list of points that represents the path created by A* algorithm."""
-    current = goal
-    path = [current]
-    while current != start:
-        current = came_from[current]
-        path.append(current)
-    path.reverse()
-    return path
-
-
 def heuristic(a, b):
     """Return absolute distance from point a to b."""
     (x1, y1) = a
@@ -41,3 +30,33 @@ def a_star_search(graph, start, goal):
                 came_from[next] = current
 
     return came_from, cost_so_far
+
+
+def reconstruct_path(came_from, start, goal):
+    """Return list of points that represents the path created by A* algorithm."""
+    current = goal
+    path = [current]
+    while current != start:
+        current = came_from[current]
+        path.append(current)
+    path.reverse()
+    return path
+
+
+def path_as_states(path):
+    """Return list of move directions for the agent."""
+    states = []
+    (x_prev, y_prev) = path[0]
+
+    for x, y in path[1:]:
+        if y - y_prev < 0:
+            states.append('up')
+        elif y - y_prev > 0:
+            states.append('down')
+        elif x - x_prev < 0:
+            states.append('left')
+        elif x - x_prev > 0:
+            states.append('right')
+        (x_prev, y_prev) = (x, y)
+
+    return states

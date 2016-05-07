@@ -10,7 +10,7 @@ from src.object import *
 
 # Initialize display
 pygame.init()
-screen = pygame.display.set_mode(SIZE)
+screen = pygame.display.set_mode(SCREEN_SIZE)
 pygame.display.set_caption("PRO CLEANER 9000")
 clock = pygame.time.Clock()
 
@@ -18,11 +18,11 @@ clock = pygame.time.Clock()
 # Load images
 cleaner_image = pygame.image.load("../images/cleaner.png").convert_alpha()
 cell_image = pygame.image.load("../images/floor_cell.jpg").convert_alpha()
-cell_image = pygame.transform.scale(cell_image, (29, 29))
+cell_image = pygame.transform.scale(cell_image, (CELL_WIDTH - CELL_MARGIN, CELL_HEIGHT - CELL_MARGIN))
 
 chair_image = pygame.image.load("../images/furniture_chair.png").convert_alpha()
-chair_left_image = pygame.transform.rotate(pygame.image.load("../images/furniture_chair.png").convert_alpha(), -90)
-chair_right_image = pygame.transform.rotate(pygame.image.load("../images/furniture_chair.png").convert_alpha(), 90)
+chair_left_image = pygame.transform.rotate(chair_image, -90)
+chair_right_image = pygame.transform.rotate(chair_image, 90)
 sofa_image = pygame.image.load("../images/furniture_sofa.png").convert_alpha()
 desk_image = pygame.image.load("../images/furniture_desk.png").convert_alpha()
 palm_image = pygame.image.load("../images/palm.png").convert_alpha()
@@ -51,7 +51,7 @@ images = {
 BOARD = GameBoard(NUM_COLS, NUM_ROWS)
 
 
-# Add objects to game board
+# Add objects to the game board
 BOARD.add_furniture(Object("chair", (0, 3), images["chair"].get_size()))
 BOARD.add_furniture(Object("chair_left", (17, 7), images["chair_left"].get_size()))
 BOARD.add_furniture(Object("chair_right", (5, 5), images["chair_right"].get_size()))
@@ -89,7 +89,8 @@ draw_grid(BOARD)
 point_goal = (0, 8)
 play = True
 
-# Main program loop
+
+# Main loop of the program
 while play:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -113,7 +114,7 @@ while play:
                 if BOARD.agent.pos_y() < NUM_ROWS - 1:
                     BOARD.agent.move(0, 1)
 
-            # Some predefined settings
+            # Some predefined position settings
             if event.key == pygame.K_1:
                 BOARD.agent.position = (0, 0)
                 point_goal = (0, 8)
@@ -134,6 +135,9 @@ while play:
                 print("\nPATH FROM POINT {} to {}".format(BOARD.agent.position, point_goal))
                 draw_grid(BOARD, path=reconstruction, start=BOARD.agent.position, goal=point_goal)
 
+                print("\nPATH AS STATES")
+                print(", ".join(path_as_states(reconstruction)))
+
                 for x, y in reconstruction:
                     screen.blit(images["agent"], (x * CELL_WIDTH, y * CELL_HEIGHT))
                     pygame.display.flip()
@@ -151,15 +155,16 @@ while play:
     # Draw the grid
     for row in range(NUM_ROWS):
         for column in range(NUM_COLS):
-            screen.blit(images["floor"], [column * CELL_WIDTH, row * CELL_HEIGHT])
+            screen.blit(images["floor"], [column * CELL_WIDTH + CELL_MARGIN / 2, row * CELL_HEIGHT + CELL_MARGIN / 2])
 
+    # Draw board elements
     for dirt in BOARD.dirt:
         screen.blit(images[dirt.name], dirt.real_position())
 
     for furniture in BOARD.furniture:
         screen.blit(images[furniture.name], furniture.real_position())
 
-    # Draw crossed lines at target point
+    # Draw crossed lines at the target point
     pygame.draw.line(screen, GREY, ((point_goal[0] + 0.5) * CELL_WIDTH - 1, point_goal[1] * CELL_HEIGHT),
                      ((point_goal[0] + 0.5) * CELL_WIDTH - 1, (point_goal[1] + 1) * CELL_HEIGHT - 1), 4)
     pygame.draw.line(screen, GREY, (point_goal[0] * CELL_WIDTH, (point_goal[1] + 0.5) * CELL_HEIGHT - 1),

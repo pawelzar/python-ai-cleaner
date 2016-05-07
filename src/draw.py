@@ -1,4 +1,5 @@
 def draw_point(graph, point, style):
+    """Return single element with applied style."""
     r = "-"
     if point in graph.objects: r = graph.objects[point]
     if point in graph.obstacles: r = graph.obstacles[point]
@@ -18,5 +19,14 @@ def draw_point(graph, point, style):
 
 
 def draw_grid(graph, **style):
+    """Print nice looking grid with all its elements.
+
+    Style arguments:
+    - number - print total path cost for each point
+    - point_to - print direction for each point
+    - path - print reconstructed path
+    - start - print special character for start point
+    - goal - print special character for goal point
+    """
     for y in range(graph.height):
         print("".join(draw_point(graph, (x, y), style) for x in range(graph.width)))

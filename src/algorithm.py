@@ -2,6 +2,7 @@ from src.priority_queue import *
 
 
 def reconstruct_path(came_from, start, goal):
+    """Return list of points that represents the path created by A* algorithm."""
     current = goal
     path = [current]
     while current != start:
@@ -12,12 +13,14 @@ def reconstruct_path(came_from, start, goal):
 
 
 def heuristic(a, b):
+    """Return absolute distance from point a to b."""
     (x1, y1) = a
     (x2, y2) = b
     return abs(x1 - x2) + abs(y1 - y2)
 
 
 def a_star_search(graph, start, goal):
+    """Return list of points and list of costs created by A* algorithm."""
     frontier = PriorityQueue()
     frontier.put(start, 0)
     came_from = {start: None}

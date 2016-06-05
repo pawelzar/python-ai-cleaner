@@ -1,11 +1,13 @@
 from random import randrange
 
 import pygame
+import cv2
 
-from src.algorithm import *
-from src.draw import *
-from src.graph import *
-from src.object import *
+from algorithm import *
+from draw import *
+from graph import *
+from object import *
+from neuron import NeuralNetwork, NeuralTest, NeuralTrain
 
 
 # Initialize display
@@ -16,34 +18,26 @@ clock = pygame.time.Clock()
 
 
 # Load images
-cleaner_image = pygame.image.load("../images/cleaner.png").convert_alpha()
-cell_image = pygame.image.load("../images/floor_cell.jpg").convert_alpha()
-cell_image = pygame.transform.scale(cell_image, (CELL_WIDTH - CELL_MARGIN, CELL_HEIGHT - CELL_MARGIN))
-
-chair_image = pygame.image.load("../images/furniture_chair.png").convert_alpha()
-chair_left_image = pygame.transform.rotate(chair_image, -90)
-chair_right_image = pygame.transform.rotate(chair_image, 90)
-sofa_image = pygame.image.load("../images/furniture_sofa.png").convert_alpha()
-desk_image = pygame.image.load("../images/furniture_desk.png").convert_alpha()
-palm_image = pygame.image.load("../images/palm.png").convert_alpha()
-
-dirt_dust_image = pygame.image.load("../images/dirt_dust.png").convert_alpha()
-dirt_water_image = pygame.image.load("../images/dirt_water.png").convert_alpha()
-dirt_cat_image = pygame.image.load("../images/dirt_cat.png").convert_alpha()
-
 images = {
-    "agent": cleaner_image,
-    "floor": cell_image,
-    "sofa": sofa_image,
-    "chair": chair_image,
-    "chair_left": chair_left_image,
-    "chair_right": chair_right_image,
-    "desk": desk_image,
-    "palm": palm_image,
+    "agent": pygame.image.load("../images/cleaner.png").convert_alpha(),
+    "floor": pygame.transform.scale(pygame.image.load("../images/floor_cell.jpg").convert_alpha(),
+                                    (CELL_WIDTH - CELL_MARGIN, CELL_HEIGHT - CELL_MARGIN)),
+    "sofa": pygame.image.load("../images/furniture_sofa.png").convert_alpha(),
+    "chair": pygame.image.load("../images/furniture_chair.png").convert_alpha(),
+    "chair_left": pygame.transform.rotate(pygame.image.load("../images/furniture_chair.png").convert_alpha(), -90),
+    "chair_right": pygame.transform.rotate(pygame.image.load("../images/furniture_chair.png").convert_alpha(), 90),
+    "desk": pygame.image.load("../images/furniture_desk.png").convert_alpha(),
+    "palm": pygame.image.load("../images/palm.png").convert_alpha(),
 
-    "dust": dirt_dust_image,
-    "water": dirt_water_image,
-    "cat": dirt_cat_image
+    "dust": pygame.image.load("../images/dirt_dust.png").convert_alpha(),
+    "water": pygame.image.load("../images/dirt_water.png").convert_alpha(),
+    "cat": pygame.image.load("../images/dirt_cat.png").convert_alpha()
+}
+
+img_dirt = {
+    "dust": "../images/dirt_dust.png",
+    "water": "../images/dirt_water.png",
+    "cat": "../images/dirt_cat.png"
 }
 
 
@@ -84,11 +78,12 @@ for x, y in position_dirt_cat:
     BOARD.add_dirt(Object("cat", (x, y)))
 
 
+network = NeuralNetwork()
+
 print("INITIAL GAME BOARD")
 draw_grid(BOARD)
 point_goal = (0, 8)
 play = True
-
 
 # Main loop of the program
 while play:
@@ -98,14 +93,6 @@ while play:
             break
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                if BOARD.agent.pos_x() > 0:
-                    BOARD.agent.move(-1, 0)
-
-            if event.key == pygame.K_RIGHT:
-                if BOARD.agent.pos_x() < NUM_COLS - 1:
-                    BOARD.agent.move(1, 0)
-
             if event.key == pygame.K_UP:
                 if BOARD.agent.pos_y() > 0:
                     BOARD.agent.move(0, -1)
@@ -113,6 +100,14 @@ while play:
             if event.key == pygame.K_DOWN:
                 if BOARD.agent.pos_y() < NUM_ROWS - 1:
                     BOARD.agent.move(0, 1)
+
+            if event.key == pygame.K_LEFT:
+                if BOARD.agent.pos_x() > 0:
+                    BOARD.agent.move(-1, 0)
+
+            if event.key == pygame.K_RIGHT:
+                if BOARD.agent.pos_x() < NUM_COLS - 1:
+                    BOARD.agent.move(1, 0)
 
             # Some predefined position settings
             if event.key == pygame.K_1:
@@ -129,21 +124,42 @@ while play:
 
             # Present the work of the algorithm
             if event.key == pygame.K_END:
-                came_from, cost_so_far = a_star_search(BOARD, BOARD.agent.position, point_goal)
+                came_from, cost_so_far = a_star_search(BOARD, BOARD.agent.position, point_goal, 'up')
                 reconstruction = reconstruct_path(came_from, start=BOARD.agent.position, goal=point_goal)
 
                 print("\nPATH FROM POINT {} to {}".format(BOARD.agent.position, point_goal))
                 draw_grid(BOARD, path=reconstruction, start=BOARD.agent.position, goal=point_goal)
 
-                print("\nPATH AS STATES")
-                print(", ".join(path_as_states(reconstruction)))
+                print("\nORDERS FOR AGENT TO MOVE")
+                print(", ".join(str(x) for x in path_as_orders(reconstruction)))
 
-                for x, y in reconstruction:
-                    screen.blit(images["agent"], (x * CELL_WIDTH, y * CELL_HEIGHT))
+                directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]  # [up, right, down, left]
+                direction = 0
+                rotation = 0
+                for order in path_as_orders(reconstruction):
+                    if order == 'turn right':
+                        rotation -= 90
+                        images["agent"] = pygame.transform.rotate(images["agent"], -90)
+                        direction = (direction + 1) % 4
+                    elif order == 'turn left':
+                        rotation += 90
+                        images["agent"] = pygame.transform.rotate(images["agent"], 90)
+                        direction = (direction - 1) % 4
+                    else:
+                        BOARD.agent.move(*directions[direction])
+
+                    screen.blit(images["agent"], BOARD.agent.real_position())
                     pygame.display.flip()
                     pygame.time.wait(100)
 
-                BOARD.agent.position = point_goal
+                images["agent"] = pygame.transform.rotate(images["agent"], -rotation)
+
+            if event.key == pygame.K_BACKSPACE:
+                test = NeuralTest(cv2.imread(img_dirt[BOARD.get_object_name(BOARD.agent.position)]))
+                test.prepare_test_data()
+                recognition = network.test_network(test)
+                print(recognition)
+                # print BOARD.get_object_name(BOARD.agent.position)
 
             if event.key == pygame.K_HOME:
                 print("\nCURRENT GAME BOARD")
@@ -155,7 +171,8 @@ while play:
     # Draw the grid
     for row in range(NUM_ROWS):
         for column in range(NUM_COLS):
-            screen.blit(images["floor"], [column * CELL_WIDTH + CELL_MARGIN / 2, row * CELL_HEIGHT + CELL_MARGIN / 2])
+            screen.blit(images["floor"], [column * CELL_WIDTH + (CELL_MARGIN / 2),
+                                          row * CELL_HEIGHT + (CELL_MARGIN / 2)])
 
     # Draw board elements
     for dirt in BOARD.dirt:

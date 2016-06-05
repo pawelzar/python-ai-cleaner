@@ -1,4 +1,4 @@
-from src.screen_settings import *
+from settings import *
 
 
 class Object:

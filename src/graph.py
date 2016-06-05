@@ -1,4 +1,4 @@
-class Grid:
+class Grid(object):
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -33,7 +33,7 @@ class Grid:
 
 class GridWithWeights(Grid):
     def __init__(self, width, height):
-        super().__init__(width, height)
+        super(GridWithWeights, self).__init__(width, height)
         self.weights = {}
 
     def cost(self, from_node, to_node):
@@ -47,7 +47,7 @@ class GridWithWeights(Grid):
 
 class GameBoard(GridWithWeights):
     def __init__(self, width, height):
-        super().__init__(width, height)
+        super(GameBoard, self).__init__(width, height)
         self.furniture = []
         self.dirt = []
         self.agent = None
@@ -66,3 +66,8 @@ class GameBoard(GridWithWeights):
     def add_agent(self, agent):
         """Assign agent to the board."""
         self.agent = agent
+
+    def get_object_name(self, position):
+        for item in self.dirt:
+            if item.position == position:
+                return item.name

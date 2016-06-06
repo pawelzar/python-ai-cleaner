@@ -80,3 +80,10 @@ class GameBoard(GridWithWeights):
 
     def get_dirt_points(self):
         return [item.position for item in self.dirt]
+
+    def clean_object(self, position):
+        for i, item in enumerate(self.dirt):
+            if item.position == position:
+                del self.dirt[i]
+                del self.objects[position]
+                del self.weights[position]

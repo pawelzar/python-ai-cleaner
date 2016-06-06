@@ -68,7 +68,7 @@ class NeuralTrain:
     def prepare_train_data(self):
         for x in range(self.height):
             for y in range(self.width):
-                if (self.img[x, y] == [29, 230, 181]).all():
+                if (self.img[x, y] == self.color).all():
                     self.img[x, y] = [255, 255, 255]
                 elif (self.img[x, y] != [255, 255, 255]).any():
                     self.img[x, y] = [0, 0, 0]

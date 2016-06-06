@@ -10,6 +10,10 @@ from object import *
 from neuron import NeuralNetwork, NeuralTest, NeuralTrain
 
 
+# Initialize neural network
+network = NeuralNetwork()
+
+
 # Initialize display
 pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE)
@@ -22,6 +26,7 @@ images = {
     "agent": pygame.image.load("../images/cleaner.png").convert_alpha(),
     "floor": pygame.transform.scale(pygame.image.load("../images/floor_cell.jpg").convert_alpha(),
                                     (CELL_WIDTH - CELL_MARGIN, CELL_HEIGHT - CELL_MARGIN)),
+    "station": pygame.image.load("../images/station.png").convert_alpha(),
     "sofa": pygame.image.load("../images/furniture_sofa.png").convert_alpha(),
     "chair": pygame.image.load("../images/furniture_chair.png").convert_alpha(),
     "chair_left": pygame.transform.rotate(pygame.image.load("../images/furniture_chair.png").convert_alpha(), -90),
@@ -34,12 +39,11 @@ images = {
     "cat": pygame.image.load("../images/dirt_cat.png").convert_alpha()
 }
 
-img_dirt = {
+img_path = {
     "dust": "../images/dirt_dust.png",
     "water": "../images/dirt_water.png",
-    "cat": "../images/dirt_cat.png"
+    "cat": "../images/dirt_cat.png",
 }
-
 
 # Initialize board
 BOARD = GameBoard(NUM_COLS, NUM_ROWS)
@@ -55,43 +59,35 @@ BOARD.add_furniture(Object("palm", (17, 1), images["palm"].get_size()))
 BOARD.add_furniture(Object("palm", (17, 9), images["palm"].get_size()))
 #BOARD.add_furniture(Object("palm", (19, 17), images["palm"].get_size()))
 #BOARD.add_furniture(Object("palm", (25, 8), images["palm"].get_size()))
+BOARD.add_furniture(Object("station", (0, 0), images["station"].get_size()))
 BOARD.add_agent(Object("agent", (0, 0)))
 
 
-position_dirt_dust = []
 for i in range(10):
-    random = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
-    while random in BOARD.get_points():
-        random = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
-    position_dirt_dust.append(random)
+    (x, y) = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
+    while (x, y) in BOARD.get_points():
+        (x, y) = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
 
-for x, y in position_dirt_dust:
     BOARD.add_object((x, y), '1')
     BOARD.add_weight((x, y), 20)
     BOARD.add_dirt(Object("dust", (x, y)))
 
 
-position_dirt_water = []
 for i in range(10):
-    random = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
-    while random in BOARD.get_points():
-        random = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
-    position_dirt_water.append(random)
+    (x, y) = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
+    while (x, y) in BOARD.get_points():
+        (x, y) = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
 
-for x, y in position_dirt_water:
     BOARD.add_object((x, y), '2')
     BOARD.add_weight((x, y), 5)
     BOARD.add_dirt(Object("water", (x, y)))
 
 
-position_dirt_cat = []
 for i in range(10):
-    random = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
-    while random in BOARD.get_points():
-        random = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
-    position_dirt_cat.append(random)
+    (x, y) = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
+    while (x, y) in BOARD.get_points():
+        (x, y) = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
 
-for x, y in position_dirt_cat:
     BOARD.add_object((x, y), '3')
     BOARD.add_weight((x, y), 10)
     BOARD.add_dirt(Object("cat", (x, y)))
@@ -99,12 +95,32 @@ for x, y in position_dirt_cat:
 #print str(BOARD.get_furniture_points())
 #print str(BOARD.get_dirt_points())
 
-network = NeuralNetwork()
 
 print("INITIAL GAME BOARD")
 draw_grid(BOARD)
 point_goal = (0, 8)
 play = True
+
+
+def display_refresh(BOARD):
+    # Set the screen background
+    screen.fill(GREY)
+
+    # Draw the grid
+    for row in range(NUM_ROWS):
+        for column in range(NUM_COLS):
+            screen.blit(images["floor"], [column * CELL_WIDTH + (CELL_MARGIN / 2),
+                                          row * CELL_HEIGHT + (CELL_MARGIN / 2)])
+
+    # Draw board elements
+    for dirt in BOARD.dirt:
+        screen.blit(images[dirt.name], dirt.real_position())
+
+    for furniture in BOARD.furniture:
+        screen.blit(images[furniture.name], furniture.real_position())
+
+    screen.blit(images["agent"], BOARD.agent.real_position())
+
 
 # Main loop of the program
 while play:
@@ -136,12 +152,12 @@ while play:
                 point_goal = (0, 8)
 
             if event.key == pygame.K_2:
-                BOARD.agent.position = (11, 8)
-                point_goal = (11, 13)
+                BOARD.agent.position = (11, 7)
+                point_goal = (11, 11)
 
             if event.key == pygame.K_3:
                 BOARD.agent.position = (0, 0)
-                point_goal = (11, 13)
+                point_goal = (11, 11)
 
             # Present the work of the algorithm
             if event.key == pygame.K_END:
@@ -176,11 +192,50 @@ while play:
                 images["agent"] = pygame.transform.rotate(images["agent"], -rotation)
 
             if event.key == pygame.K_BACKSPACE:
-                test = NeuralTest(cv2.imread(img_dirt[BOARD.get_object_name(BOARD.agent.position)]))
-                test.prepare_test_data()
-                recognition = network.test_network(test)
-                print(recognition)
-                # print BOARD.get_object_name(BOARD.agent.position)
+                image = img_path.get(BOARD.get_object_name(BOARD.agent.position), "")
+                if image:
+                    test = NeuralTest(cv2.imread(image))
+                    test.prepare_test_data()
+                    recognition = network.test_network(test)
+                    print(recognition)
+                    # print BOARD.get_object_name(BOARD.agent.position)
+                else:
+                    print("None")
+
+            if event.key == pygame.K_c:
+                BOARD.clean_object(BOARD.agent.position)
+                draw_grid(BOARD)
+
+            if event.key == pygame.K_0:
+                #distances = sorted(map(lambda a, b: heuristic(a, b),
+                #                [(BOARD.agent.position, item.position) for item in BOARD.dirt]))
+                while BOARD.dirt:
+                    point_goal = BOARD.agent.find_closest(BOARD)
+                    came_from, cost_so_far = a_star_search(BOARD, BOARD.agent.position, point_goal, 'up')
+                    reconstruction = reconstruct_path(came_from, start=BOARD.agent.position, goal=point_goal)
+
+                    directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]  # [up, right, down, left]
+                    direction = 0
+                    rotation = 0
+                    for order in path_as_orders(reconstruction):
+                        if order == 'turn right':
+                            rotation -= 90
+                            images["agent"] = pygame.transform.rotate(images["agent"], -90)
+                            direction = (direction + 1) % 4
+                        elif order == 'turn left':
+                            rotation += 90
+                            images["agent"] = pygame.transform.rotate(images["agent"], 90)
+                            direction = (direction - 1) % 4
+                        else:
+                            BOARD.agent.move(*directions[direction])
+
+                        #screen.blit(images["agent"], BOARD.agent.real_position())
+                        display_refresh(BOARD)
+                        pygame.display.flip()
+                        pygame.time.wait(100)
+
+                    BOARD.clean_object(BOARD.agent.position)
+                    images["agent"] = pygame.transform.rotate(images["agent"], -rotation)
 
             if event.key == pygame.K_HOME:
                 print("\nCURRENT GAME BOARD")

@@ -34,3 +34,13 @@ class Object:
     def move(self, x, y):
         """Shift the position of the object on the board by vector (x (horizontally) and y (vertically))."""
         self.position = (self.position[0] + x, self.position[1] + y)
+
+    def find_closest(self, board):
+        closest = NUM_ROWS * NUM_COLS
+        closest_pos = (0, 0)
+        for item in board.dirt:
+            distance = abs(self.position[0] - item.position[0]) + abs(self.position[1] - item.position[1])
+            if distance < closest:
+                closest = distance
+                closest_pos = item.position
+        return closest_pos

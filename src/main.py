@@ -47,36 +47,57 @@ BOARD = GameBoard(NUM_COLS, NUM_ROWS)
 
 # Add objects to the game board
 BOARD.add_furniture(Object("chair", (0, 3), images["chair"].get_size()))
-BOARD.add_furniture(Object("chair_left", (17, 7), images["chair_left"].get_size()))
-BOARD.add_furniture(Object("chair_right", (5, 5), images["chair_right"].get_size()))
-BOARD.add_furniture(Object("sofa", (10, 10), images["sofa"].get_size()))
+BOARD.add_furniture(Object("chair_left", (7, 5), images["chair_left"].get_size()))
+BOARD.add_furniture(Object("chair_right", (15, 5), images["chair_right"].get_size()))
+BOARD.add_furniture(Object("sofa", (9, 8), images["sofa"].get_size()))
 BOARD.add_furniture(Object("desk", (10, 2), images["desk"].get_size()))
-BOARD.add_furniture(Object("palm", (5, 16), images["palm"].get_size()))
-BOARD.add_furniture(Object("palm", (15, 15), images["palm"].get_size()))
-BOARD.add_furniture(Object("palm", (19, 17), images["palm"].get_size()))
-BOARD.add_furniture(Object("palm", (25, 8), images["palm"].get_size()))
+BOARD.add_furniture(Object("palm", (17, 1), images["palm"].get_size()))
+BOARD.add_furniture(Object("palm", (17, 9), images["palm"].get_size()))
+#BOARD.add_furniture(Object("palm", (19, 17), images["palm"].get_size()))
+#BOARD.add_furniture(Object("palm", (25, 8), images["palm"].get_size()))
 BOARD.add_agent(Object("agent", (0, 0)))
 
 
-position_dirt_dust = [(randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1)) for _ in range(30)]
-position_dirt_water = [(randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1)) for _ in range(30)]
-position_dirt_cat = [(randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1)) for _ in range(30)]
+position_dirt_dust = []
+for i in range(10):
+    random = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
+    while random in BOARD.get_points():
+        random = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
+    position_dirt_dust.append(random)
 
 for x, y in position_dirt_dust:
     BOARD.add_object((x, y), '1')
     BOARD.add_weight((x, y), 20)
     BOARD.add_dirt(Object("dust", (x, y)))
 
+
+position_dirt_water = []
+for i in range(10):
+    random = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
+    while random in BOARD.get_points():
+        random = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
+    position_dirt_water.append(random)
+
 for x, y in position_dirt_water:
     BOARD.add_object((x, y), '2')
     BOARD.add_weight((x, y), 5)
     BOARD.add_dirt(Object("water", (x, y)))
+
+
+position_dirt_cat = []
+for i in range(10):
+    random = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
+    while random in BOARD.get_points():
+        random = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
+    position_dirt_cat.append(random)
 
 for x, y in position_dirt_cat:
     BOARD.add_object((x, y), '3')
     BOARD.add_weight((x, y), 10)
     BOARD.add_dirt(Object("cat", (x, y)))
 
+#print str(BOARD.get_furniture_points())
+#print str(BOARD.get_dirt_points())
 
 network = NeuralNetwork()
 

@@ -16,15 +16,15 @@ class NeuralNetwork:
 
         self.trainData = []
 
-        dirt_cat_1 = NeuralTrain(cv2.imread('../images_train/dirt_cat_1.png'), self.encodingDict["cat"])
-        dirt_cat_2 = NeuralTrain(cv2.imread('../images_train/dirt_cat_2.png'), self.encodingDict["cat"])
-        dirt_cat_3 = NeuralTrain(cv2.imread('../images_train/dirt_cat_3.png'), self.encodingDict["cat"])
-        dirt_dust_1 = NeuralTrain(cv2.imread('../images_train/dirt_dust_1.png'), self.encodingDict["dust"])
-        dirt_dust_2 = NeuralTrain(cv2.imread('../images_train/dirt_dust_2.png'), self.encodingDict["dust"])
-        dirt_dust_3 = NeuralTrain(cv2.imread('../images_train/dirt_dust_3.png'), self.encodingDict["dust"])
-        dirt_water_1 = NeuralTrain(cv2.imread('../images_train/dirt_water_1.png'), self.encodingDict["water"])
-        dirt_water_2 = NeuralTrain(cv2.imread('../images_train/dirt_water_2.png'), self.encodingDict["water"])
-        dirt_water_3 = NeuralTrain(cv2.imread('../images_train/dirt_water_3.png'), self.encodingDict["water"])
+        dirt_cat_1 = NeuralTrain(cv2.imread('../images_train_2/cat1.png'), self.encodingDict["cat"])
+        dirt_cat_2 = NeuralTrain(cv2.imread('../images_train_2/cat2.png'), self.encodingDict["cat"])
+        dirt_cat_3 = NeuralTrain(cv2.imread('../images_train_2/cat3.png'), self.encodingDict["cat"])
+        dirt_dust_1 = NeuralTrain(cv2.imread('../images_train_2/dust1.png'), self.encodingDict["dust"])
+        dirt_dust_2 = NeuralTrain(cv2.imread('../images_train_2/dust2.png'), self.encodingDict["dust"])
+        dirt_dust_3 = NeuralTrain(cv2.imread('../images_train_2/dust3.png'), self.encodingDict["dust"])
+        dirt_water_1 = NeuralTrain(cv2.imread('../images_train_2/water1.png'), self.encodingDict["water"])
+        dirt_water_2 = NeuralTrain(cv2.imread('../images_train_2/water2.png'), self.encodingDict["water"])
+        dirt_water_3 = NeuralTrain(cv2.imread('../images_train_2/water3.png'), self.encodingDict["water"])
 
         self.trainData.append(dirt_cat_1)
         self.trainData.append(dirt_cat_2)

@@ -11,8 +11,8 @@ CELL_WIDTH = 30
 CELL_HEIGHT = 30
 
 # Set number of rows and columns in the grid
-NUM_ROWS = 20
-NUM_COLS = 30
+NUM_ROWS = 12
+NUM_COLS = 20
 
 # Set margin between each cell (in pixels)
 CELL_MARGIN = 1

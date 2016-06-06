@@ -71,3 +71,12 @@ class GameBoard(GridWithWeights):
         for item in self.dirt:
             if item.position == position:
                 return item.name
+
+    def get_points(self):
+        return self.obstacles.keys() + [item.position for item in self.dirt]
+
+    def get_furniture_points(self):
+        return sorted(self.obstacles.keys())
+
+    def get_dirt_points(self):
+        return [item.position for item in self.dirt]

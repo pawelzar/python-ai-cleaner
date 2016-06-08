@@ -48,10 +48,11 @@ class NeuralNetwork:
                             x.color[1] / 1000.0, x.color[2] / 1000.0), x.output)
 
         trainer = BackpropTrainer(self.net, momentum=0.1, verbose=True, weightdecay=0.01)
-        trainer.trainOnDataset(data, 800)
+        trainer.trainOnDataset(data, 800)  # 800 iterations
         trainer.testOnData(verbose=True)
 
     def test_network(self, test):
+        """Return list of values, which is the output of activate function. Parameter is image."""
         output = np.around(self.net.activate([test.contours / 100.0, test.color[0] / 1000.0,
                                               test.color[1] / 1000.0, test.color[2] / 1000.0]))
         for key, value in self.encodingDict.items():

@@ -1,4 +1,3 @@
-import cv2
 import pygame
 
 from src.settings import *
@@ -8,6 +7,7 @@ from src.draw import draw_grid
 from src.structure.cleaner import Cleaner
 from src.structure.gameboard import GameBoard
 from src.structure.object import Object
+
 
 # Initialize neural network
 network = NeuralNetwork()
@@ -108,19 +108,12 @@ while play:
                 agent.position = (0, 0)
                 point_goal = (11, 11)
 
-            # Present the work of the algorithm
+            # Present the A* algorithm (move on path)
             if event.key == pygame.K_END:
                 agent.move_to(point_goal)
 
             if event.key == pygame.K_BACKSPACE:
-                image = img_path.get(BOARD.get_object_name(agent.position), "")
-                if image:
-                    test = NeuralTest(cv2.imread(image))
-                    test.prepare_test_data()
-                    recognition = network.test_network(test)
-                    print("{} is {}".format(agent.position, recognition))
-                else:
-                    print("None")
+                agent.recognize(img_path)
 
             if event.key == pygame.K_c:
                 agent.clean()

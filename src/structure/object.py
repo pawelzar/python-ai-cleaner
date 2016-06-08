@@ -7,10 +7,12 @@ class Object(object):
         self.position = position
         self.size = size
 
+    # @property
     def pos_x(self):
         """Return horizontal position on the board."""
         return self.position[0]
 
+    # @property
     def pos_y(self):
         """Return vertical position on the board."""
         return self.position[1]
@@ -23,6 +25,7 @@ class Object(object):
         """Return number of cells occupied vertically by the object on the board."""
         return self.size[1] // CELL_HEIGHT
 
-    def real_position(self):
+    # @property
+    def screen_position(self):
         """Return exact position in pixels on the screen."""
         return self.position[0] * CELL_WIDTH, self.position[1] * CELL_HEIGHT

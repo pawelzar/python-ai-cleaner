@@ -23,7 +23,7 @@ class Grid(object):
         return results
 
     def add_obstacle(self, point):
-        """Specify the point through which the agent can not go."""
+        """Specify character for the point, through which the agent cannot go."""
         self.obstacles[point] = '#'
 
     def add_object(self, point, character):

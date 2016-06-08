@@ -1,7 +1,7 @@
-from settings import *
+from src.settings import NUM_COLS, NUM_ROWS, CELL_HEIGHT, CELL_WIDTH
 
 
-class Object:
+class Object(object):
     def __init__(self, name, position, size=(CELL_WIDTH, CELL_HEIGHT)):
         self.name = name
         self.position = position
@@ -26,21 +26,3 @@ class Object:
     def real_position(self):
         """Return exact position in pixels on the screen."""
         return self.position[0] * CELL_WIDTH, self.position[1] * CELL_HEIGHT
-
-    def set_position(self, x, y):
-        """Set the position of the object on the board."""
-        self.position = (x, y)
-
-    def move(self, x, y):
-        """Shift the position of the object on the board by vector (x (horizontally) and y (vertically))."""
-        self.position = (self.position[0] + x, self.position[1] + y)
-
-    def find_closest(self, board):
-        closest = NUM_ROWS * NUM_COLS
-        closest_pos = (0, 0)
-        for item in board.dirt:
-            distance = abs(self.position[0] - item.position[0]) + abs(self.position[1] - item.position[1])
-            if distance < closest:
-                closest = distance
-                closest_pos = item.position
-        return closest_pos

@@ -3,7 +3,8 @@ def draw_point(graph, point, style):
     r = "-"
     if point in graph.objects: r = graph.objects[point]
     if point in graph.obstacles: r = graph.obstacles[point]
-    if point == graph.agent.position: r = "A"
+    if point == graph.station.position: r = "S"
+#    if point == graph.agent.position: r = "A"
     if 'number' in style and point in style['number']: r = style['number'][point]
     if 'point_to' in style and style['point_to'].get(point, None) is not None:
         (x1, y1) = point

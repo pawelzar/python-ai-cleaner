@@ -16,15 +16,15 @@ class NeuralNetwork:
 
         self.trainData = []
 
-        dirt_cat_1 = NeuralTrain(cv2.imread('../images_train_2/cat1.png'), self.encodingDict["cat"])
-        dirt_cat_2 = NeuralTrain(cv2.imread('../images_train_2/cat2.png'), self.encodingDict["cat"])
-        dirt_cat_3 = NeuralTrain(cv2.imread('../images_train_2/cat3.png'), self.encodingDict["cat"])
-        dirt_dust_1 = NeuralTrain(cv2.imread('../images_train_2/dust1.png'), self.encodingDict["dust"])
-        dirt_dust_2 = NeuralTrain(cv2.imread('../images_train_2/dust2.png'), self.encodingDict["dust"])
-        dirt_dust_3 = NeuralTrain(cv2.imread('../images_train_2/dust3.png'), self.encodingDict["dust"])
-        dirt_water_1 = NeuralTrain(cv2.imread('../images_train_2/water1.png'), self.encodingDict["water"])
-        dirt_water_2 = NeuralTrain(cv2.imread('../images_train_2/water2.png'), self.encodingDict["water"])
-        dirt_water_3 = NeuralTrain(cv2.imread('../images_train_2/water3.png'), self.encodingDict["water"])
+        dirt_cat_1 = NeuralTrain(cv2.imread('../images_train/cat1.png'), self.encodingDict["cat"])
+        dirt_cat_2 = NeuralTrain(cv2.imread('../images_train/cat2.png'), self.encodingDict["cat"])
+        dirt_cat_3 = NeuralTrain(cv2.imread('../images_train/cat3.png'), self.encodingDict["cat"])
+        dirt_dust_1 = NeuralTrain(cv2.imread('../images_train/dust1.png'), self.encodingDict["dust"])
+        dirt_dust_2 = NeuralTrain(cv2.imread('../images_train/dust2.png'), self.encodingDict["dust"])
+        dirt_dust_3 = NeuralTrain(cv2.imread('../images_train/dust3.png'), self.encodingDict["dust"])
+        dirt_water_1 = NeuralTrain(cv2.imread('../images_train/water1.png'), self.encodingDict["water"])
+        dirt_water_2 = NeuralTrain(cv2.imread('../images_train/water2.png'), self.encodingDict["water"])
+        dirt_water_3 = NeuralTrain(cv2.imread('../images_train/water3.png'), self.encodingDict["water"])
 
         self.trainData.append(dirt_cat_1)
         self.trainData.append(dirt_cat_2)
@@ -43,15 +43,16 @@ class NeuralNetwork:
         data = SupervisedDataSet(4, 3)
 
         for x in self.trainData:
-            data.addSample((x.contours/100.0, x.color[0]/1000.0, x.color[1]/1000.0, x.color[2]/1000.0), x.output)
+            data.addSample((x.contours / 100.0, x.color[0] / 1000.0,
+                            x.color[1] / 1000.0, x.color[2] / 1000.0), x.output)
 
         trainer = BackpropTrainer(self.net, momentum=0.1, verbose=True, weightdecay=0.01)
-        trainer.trainOnDataset(data, 1000)
+        trainer.trainOnDataset(data, 800)
         trainer.testOnData(verbose=True)
 
     def test_network(self, test):
-        output = np.around(self.net.activate([test.contours/100.0, test.color[0]/1000.0,
-                                              test.color[1]/1000.0, test.color[2]/1000.0]))
+        output = np.around(self.net.activate([test.contours / 100.0, test.color[0] / 1000.0,
+                                              test.color[1] / 1000.0, test.color[2] / 1000.0]))
         for key, value in self.encodingDict.items():
             if (value == output).all():
                 return key

@@ -47,12 +47,12 @@ class Cleaner(Object):
         The distance is "Manhattan distance" (strictly horizontal and/or vertical path).
         """
         closest = NUM_ROWS * NUM_COLS
-        closest_pos = (0, 0)
-        for item in self.board.dirt:
-            distance = abs(self.position[0] - item.position[0]) + abs(self.position[1] - item.position[1])
+        closest_pos = self.board.station.position
+        for item in self.data.keys():
+            distance = abs(self.position[0] - item[0]) + abs(self.position[1] - item[1])
             if distance < closest:
                 closest = distance
-                closest_pos = item.position
+                closest_pos = item
         return closest_pos
 
     def go_to_station(self):
@@ -67,32 +67,41 @@ class Cleaner(Object):
 
     def clean(self):
         """Remove object (dirt) from board at current position."""
-        self.board.clean_object(self.position)
+        if self.position in self.data.keys():
+            self.board.clean_object(self.position)
+            del self.data[self.position]
 
-    def recognize(self, images):
+    def recognize(self, images, position=("", )):
         """Using assigned neural network, recognize object by image at current position."""
-        image = images.get(self.board.get_object_name(self.position), "")
+        if isinstance(position[0], str):
+            position = self.position
+
+        recognition = ""
+        image = images.get(self.board.get_object_name(position), "")
+
         if image:
             test = NeuralTest(cv2.imread(image))
             test.prepare_test_data()
             recognition = self.network.test_network(test)
-            print("{} is {}".format(self.position, recognition))
-        else:
-            print("None")
+            print("{} is {}".format(position, recognition))
+
+        return recognition
 
     def collect_data(self, images):
-        """Using assigned neural network, recognize all images on screen and save it if object is dirt."""
+        """Using assigned neural network, recognize all images on the screen and save it if the object is dirt."""
         self.data = dict()
         print("\nCOLLECTING DATA...")
+
         for y in range(self.board.height):
             for x in range(self.board.width):
-                image = images.get(self.board.get_object_name((x, y)), "")
-                if image:
-                    test = NeuralTest(cv2.imread(image))
-                    test.prepare_test_data()
-                    recognition = self.network.test_network(test)
-                    print "({}, {}) is {}".format(x, y, recognition)
+                recognition = self.recognize(images, (x, y))
+                if recognition:
                     self.data[(x, y)] = recognition
+
+        if not self.data:
+            print("\nSORRY, THERE IS NOTHING TO CLEAN.")
+        else:
+            print("\nCOLLECTED INFORMATION ABOUT DIRT.")
 
     def move_to(self, point_goal, static_board=True, draw=True):
         """Move agent from it's current position to position_goal.
@@ -114,6 +123,7 @@ class Cleaner(Object):
         directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]  # [up, right, down, left]
         direction = 0
         rotation = 0
+
         for order in path_as_orders(reconstruction):
             if order == 'turn right':
                 rotation -= 90
@@ -128,6 +138,7 @@ class Cleaner(Object):
 
             if not static_board:
                 self.board.draw()
+
             self.screen.blit(self.image, self.screen_position())
             pygame.display.flip()
             pygame.time.wait(60)
@@ -136,12 +147,17 @@ class Cleaner(Object):
 
     def clean_all(self):
         """Remove all objects (dirt) from board."""
-        print("\nCLEANING...")
-        while self.board.dirt:
-            point_goal = self.find_closest()
-            self.move_to(point_goal, False, False)
-            self.board.clean_object(self.position)
-        print("\nCLEAN AS A WHISTLE, SIR!")
+        if self.board.dirt and not self.data:
+            print("\nNO INFORMATION ABOUT DIRT, PLEASE LAUNCH RECOGNITION PROCESS.")
+        else:
+            print("\nCLEANING...")
+
+            while self.data:
+                point_goal = self.find_closest()
+                self.move_to(point_goal, False, False)
+                self.clean()
+
+            print("\nCLEAN AS A WHISTLE, SIR!")
 
     def draw(self):
         """Draw agent image on previously assigned screen."""

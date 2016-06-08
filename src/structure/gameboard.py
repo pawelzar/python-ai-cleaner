@@ -1,9 +1,10 @@
+from random import randrange
+
 import pygame
 
-from src.settings import *
-from random import randrange
-from object import Object
 from graph import GridWithWeights
+from object import Object
+from src.settings import *
 
 
 class GameBoard(GridWithWeights):

@@ -1,4 +1,4 @@
-from priority_queue import *
+from src.structure.pqueue import PriorityQueue
 
 
 def heuristic(a, b):
@@ -9,6 +9,7 @@ def heuristic(a, b):
 
 
 def count_cost(start, goal, state):
+    """Return cost of agent's move, including rotations."""
     (x, y) = start
     (x_next, y_next) = goal
     new_state = state
@@ -123,7 +124,7 @@ def path_as_states(path):
 
 def path_as_orders(path, rotation=0):
     """Return list of move directions for the agent."""
-    #state = {0: 'up', 90: 'right', 180: 'down', -90: 'left'}.get(rotation)
+    # state = {0: 'up', 90: 'right', 180: 'down', -90: 'left'}.get(rotation)
     state = 'up'
     states = []
     rotations = []

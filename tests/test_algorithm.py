@@ -1,7 +1,7 @@
-from src.algorithm import *
-from src.draw import draw_grid
 from src.graph import *
 
+from src.algorithm import *
+from src.draw import draw_grid
 
 diagram = GridWithWeights(20, 10)
 for point in [(1, 7), (1, 8), (2, 7), (2, 8), (3, 7), (3, 8), (1, 1), (1, 2), (2, 1), (2, 2)]:

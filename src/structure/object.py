@@ -1,4 +1,4 @@
-from src.settings import NUM_COLS, NUM_ROWS, CELL_HEIGHT, CELL_WIDTH
+from src.settings import CELL_HEIGHT, CELL_WIDTH
 
 
 class Object(object):

@@ -1,11 +1,12 @@
-import pygame
 import cv2
+import pygame
 
+from object import Object
+
+from src.draw import draw_grid
+from src.neuron import NeuralTest
 from src.settings import NUM_COLS, NUM_ROWS
 from src.algorithm import a_star_search, reconstruct_path, path_as_orders
-from object import Object
-from src.neuron import NeuralTest
-from src.draw import draw_grid
 
 
 class Cleaner(Object):
@@ -18,6 +19,7 @@ class Cleaner(Object):
         self.data = dict()
         self.board = None
         self.screen = None
+        self.network = None
 
     def set_position(self, x, y):
         """Set the position of the object on the board."""
@@ -43,6 +45,9 @@ class Cleaner(Object):
     def assign_screen(self, screen):
         self.screen = screen
 
+    def assign_network(self, network):
+        self.network = network
+
     def go_to_station(self):
         self.move_to(self.board.station.position)
 
@@ -51,7 +56,7 @@ class Cleaner(Object):
         self.soap = 100
         self.capacity = 100
 
-    def collect_data(self, network, images):
+    def collect_data(self, images):
         self.data = dict()
         print("\nCOLLECTING DATA...")
         for y in range(self.board.height):
@@ -60,7 +65,7 @@ class Cleaner(Object):
                 if image:
                     test = NeuralTest(cv2.imread(image))
                     test.prepare_test_data()
-                    recognition = network.test_network(test)
+                    recognition = self.network.test_network(test)
                     print "({}, {}) is {}".format(x, y, recognition)
                     self.data[(x, y)] = recognition
 
@@ -120,10 +125,10 @@ class Cleaner(Object):
                 else:
                     self.move(*directions[direction])
 
-                #screen.blit(images["agent"], agent.real_position())
+                # screen.blit(images["agent"], agent.real_position())
                 self.board.draw()
                 self.screen.blit(self.image, self.real_position())
-                #clock.tick(60)
+                # clock.tick(60)
                 pygame.display.flip()
                 pygame.time.wait(50)
 

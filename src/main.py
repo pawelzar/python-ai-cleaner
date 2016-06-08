@@ -1,12 +1,13 @@
 import cv2
 import pygame
-from structure.cleaner import Cleaner
-from structure.gameboard import GameBoard
 
-from draw import draw_grid
-from neuron import NeuralNetwork
-from settings import *
-from structure.object import Object
+from src.settings import *
+from src.neuron import NeuralNetwork
+from src.draw import draw_grid
+
+from src.structure.cleaner import Cleaner
+from src.structure.gameboard import GameBoard
+from src.structure.object import Object
 
 # Initialize neural network
 network = NeuralNetwork()
@@ -60,6 +61,7 @@ BOARD.assign_screen(screen)
 agent = Cleaner("agent", (0, 0))
 agent.assign_board(BOARD)
 agent.assign_screen(screen)
+agent.assign_network(network)
 
 # Add random dirt objects
 BOARD.generate_random_dirt(10)
@@ -135,7 +137,7 @@ while play:
                     agent.set_position(0, 0)
 
             if event.key == pygame.K_8:
-                agent.collect_data(network, img_path)
+                agent.collect_data(img_path)
 
             if event.key == pygame.K_HOME:
                 print("\nCURRENT GAME BOARD")

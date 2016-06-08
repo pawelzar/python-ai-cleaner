@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+
 from pybrain.supervised import BackpropTrainer
 from pybrain import TanhLayer, SoftmaxLayer
 from pybrain.datasets import SupervisedDataSet

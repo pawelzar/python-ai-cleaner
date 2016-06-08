@@ -27,6 +27,7 @@ class Classification:
         fin = open(train, "r")
 
         lines = [line.strip() for line in fin.readlines()]
+        fin.close()
 
         lines.reverse()
         attributes = [attr.strip() for attr in lines.pop().split(",")]

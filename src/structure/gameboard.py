@@ -4,7 +4,8 @@ import pygame
 
 from graph import GridWithWeights
 from object import Object
-from src.settings import *
+from src.core.settings import *
+from src.core.draw import draw_grid
 
 
 class GameBoard(GridWithWeights):
@@ -12,7 +13,6 @@ class GameBoard(GridWithWeights):
         super(GameBoard, self).__init__(width, height)
         self.furniture = []
         self.dirt = []
-        self.agent = None
         self.screen = None
         self.images = None
         self.station = None
@@ -29,12 +29,8 @@ class GameBoard(GridWithWeights):
         """Add dirt object to the board."""
         self.dirt.append(dirt)
 
-    def add_agent(self, agent):
-        """Assign agent to the board."""
-        self.agent = agent
-
     def add_station(self, station):
-        """Assign agent to the board."""
+        """Assign station to the board."""
         self.station = station
 
     def get_object_name(self, position):
@@ -48,7 +44,11 @@ class GameBoard(GridWithWeights):
         return self.obstacles.keys() + [item.position for item in self.dirt]
 
     def get_furniture_points(self):
-        """Return list of furniture positions."""
+        """Return sorted list of furniture positions.
+
+        The dictionary of obstacles represents positions that are locked and agent cannot move through them.
+        Thus it represents positions of the furniture on the board.
+        """
         return sorted(self.obstacles.keys())
 
     def get_dirt_points(self):
@@ -72,41 +72,39 @@ class GameBoard(GridWithWeights):
                 del self.weights[position]
 
     def clean_all_dirt(self):
+        """Remove all dirt from the board, including weights."""
         for i, item in enumerate(self.dirt):
             del self.objects[item.position]
             del self.weights[item.position]
         self.dirt = []
 
+    def generate_random(self, name, character, weight, amount):
+        """Add as many objects of type dirt to the board as the amount specified.
+
+        Each position is generated randomly and is unique.
+        Position values are limited by the size of the board.
+
+        Parameters:
+        - name - all objects generated here will have this name
+        - character - all objects generated here be represented by this character (e.g. when printing board in console)
+        - weight - this will have influence on creating path by an algorithm (A*)
+        - amount - number of objects to be generated
+        """
+        for i in range(amount):
+            (x, y) = (randrange(0, self.width, 1), randrange(0, self.height, 1))
+            while (x, y) in self.get_points():
+                (x, y) = (randrange(0, self.width, 1), randrange(0, self.height, 1))
+
+            self.add_object((x, y), character)
+            self.add_weight((x, y), weight)
+            self.add_dirt(Object(name, (x, y)))
+
     def generate_random_dirt(self, amount):
-        """Fill board with dirt placed on random positions. Also assign proper weights and sign."""
+        """Fill board with dirt placed on random positions. Also assign proper weights and signs."""
         self.clean_all_dirt()
-
-        for i in range(amount):
-            (x, y) = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
-            while (x, y) in self.get_points():
-                (x, y) = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
-
-            self.add_object((x, y), '1')
-            self.add_weight((x, y), 20)
-            self.add_dirt(Object("dust", (x, y)))
-
-        for i in range(amount):
-            (x, y) = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
-            while (x, y) in self.get_points():
-                (x, y) = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
-
-            self.add_object((x, y), '2')
-            self.add_weight((x, y), 5)
-            self.add_dirt(Object("water", (x, y)))
-
-        for i in range(amount):
-            (x, y) = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
-            while (x, y) in self.get_points():
-                (x, y) = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
-
-            self.add_object((x, y), '3')
-            self.add_weight((x, y), 10)
-            self.add_dirt(Object("cat", (x, y)))
+        self.generate_random("dust", "1", 20, amount)
+        self.generate_random("water", "2", 5, amount)
+        self.generate_random("cat", "3", 10, amount)
 
     def draw(self):
         """Draw board images on previously assigned screen."""
@@ -114,10 +112,10 @@ class GameBoard(GridWithWeights):
         self.screen.fill(GREY)
 
         # Draw the grid
-        for row in range(NUM_ROWS):
-            for column in range(NUM_COLS):
-                self.screen.blit(self.images["floor"], [column * CELL_WIDTH + (CELL_MARGIN / 2),
-                                                        row * CELL_HEIGHT + (CELL_MARGIN / 2)])
+        for row in range(HEIGHT):
+            for column in range(WIDTH):
+                self.screen.blit(self.images["floor"],
+                                 [column * CELL_WIDTH + (CELL_MARGIN / 2), row * CELL_HEIGHT + (CELL_MARGIN / 2)])
 
         # Draw board elements
         for dirt in self.dirt:
@@ -135,3 +133,6 @@ class GameBoard(GridWithWeights):
                          ((point_goal[0] + 0.5) * CELL_WIDTH - 1, (point_goal[1] + 1) * CELL_HEIGHT - 1), 4)
         pygame.draw.line(self.screen, GREY, (point_goal[0] * CELL_WIDTH, (point_goal[1] + 0.5) * CELL_HEIGHT - 1),
                          ((point_goal[0] + 1) * CELL_WIDTH - 1, (point_goal[1] + 0.5) * CELL_HEIGHT - 1), 4)
+
+    def print_in_console(self):
+        draw_grid(self)

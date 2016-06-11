@@ -1,12 +1,11 @@
 import cv2
 import pygame
+from src.core.draw import draw_grid
+from src.core.neuron import NeuralTest
+from src.core.settings import WIDTH, HEIGHT
 
 from object import Object
-
-from src.draw import draw_grid
-from src.neuron import NeuralTest
-from src.settings import NUM_COLS, NUM_ROWS
-from src.algorithm import a_star_search, reconstruct_path, path_as_orders
+from src.core.algorithm import a_star_search, reconstruct_path, path_as_orders
 
 
 class Cleaner(Object):
@@ -38,20 +37,31 @@ class Cleaner(Object):
         """Assign previously created neural network for image recognition."""
         self.network = network
 
-    def set_to_cleaning(self):
+    def set_cleaning(self):
         """Informs agent to clean all objects on board. Changes clean_all flag to True."""
-        self.clean_all = True
+        if self.board.dirt and not self.data:
+            print("\nNO INFORMATION ABOUT DIRT, PLEASE LAUNCH RECOGNITION PROCESS.")
+        elif not self.board.dirt:
+            print("\nCLEAN AS A WHISTLE, SIR!")
+        elif self.clean_all:
+            print("\nCLEANING STOPPED")
+            self.clean_all = False
+        else:
+            print("\nCLEANING...")
+            self.clean_all = True
 
     def move(self, x, y):
         """Shift the position of the object on the board by vector (x (horizontally) and y (vertically))."""
-        self.position = (self.position[0] + x, self.position[1] + y)
+        destination = (self.position[0] + x, self.position[1] + y)
+        if self.board.passable(destination) and self.board.in_bounds(destination):
+            self.position = destination
 
     def find_closest(self):
         """Find position of dirt, which is closest from current position of the agent.
 
         The distance is "Manhattan distance" (strictly horizontal and/or vertical path).
         """
-        closest = NUM_ROWS * NUM_COLS
+        closest = WIDTH * HEIGHT  # maximum possible distance on the board
         closest_pos = self.board.station.position
         for item in self.data.keys():
             distance = abs(self.position[0] - item[0]) + abs(self.position[1] - item[1])
@@ -84,7 +94,8 @@ class Cleaner(Object):
             recognition = self.network.test_network(test)
             print("{} is {}".format(position, recognition))
 
-        return recognition
+        if recognition:
+            self.data[position] = recognition
 
     def collect_data(self, images):
         """Using assigned neural network, recognize all images on the screen and save it if the object is dirt."""
@@ -93,9 +104,7 @@ class Cleaner(Object):
 
         for y in range(self.board.height):
             for x in range(self.board.width):
-                recognition = self.recognize(images, (x, y))
-                if recognition:
-                    self.data[(x, y)] = recognition
+                self.recognize(images, (x, y))
 
         if not self.data:
             print("\nSORRY, THERE IS NOTHING TO CLEAN.")
@@ -154,7 +163,7 @@ class Cleaner(Object):
             del self.data[self.position]
 
     def clean_next(self):
-        """If clean_all flag is set, then this function cleans one element at a time."""
+        """Find closest object, move to it and clean it."""
         if self.data:
             destination = self.find_closest()
             self.board.point_goal = destination
@@ -163,39 +172,13 @@ class Cleaner(Object):
         else:
             self.clean_all = False
 
-    def clean_all(self):
-        """Remove all objects (dirt) from board."""
-        if self.board.dirt and not self.data:
-            print("\nNO INFORMATION ABOUT DIRT, PLEASE LAUNCH RECOGNITION PROCESS.")
-        else:
-            print("\nCLEANING...")
-
-            # while self.data:
-            #     point_goal = self.find_closest()
-            #     self.move_to(point_goal, False, False)
-            #     self.clean()
-
-            for pos in sorted(self.data.keys()):
-                # print pos
-                self.move_to(pos, False, False)
-                self.clean()
-
-            print("\nCLEAN AS A WHISTLE, SIR!")
-
     def draw(self):
         """Draw agent image on previously assigned screen."""
         if self.clean_all:
             self.clean_next()
         self.screen.blit(self.image, self.screen_position())
 
-    def draw_all(self):
-        """Draw agent and board assigned to it."""
-        self.board.draw()
-        if self.clean_all:
-            self.clean_next()  # if clean_all flag is set, then each iteration of main game loop cleans one object
-        self.draw()
-
-    def create_and_clean(self, images):
+    def generate_and_clean(self, images):
         """Generates new random dirt on board and automatically sets agent to clean all."""
         if not self.board.dirt:
             self.board.generate_random_dirt(25)

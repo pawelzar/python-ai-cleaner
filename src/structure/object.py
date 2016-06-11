@@ -1,4 +1,4 @@
-from src.settings import CELL_HEIGHT, CELL_WIDTH
+from src.core.settings import CELL_HEIGHT, CELL_WIDTH
 
 
 class Object(object):

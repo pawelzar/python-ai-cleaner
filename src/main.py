@@ -1,9 +1,7 @@
 import pygame
+from src.core.settings import *
 
-from src.settings import *
-from src.neuron import NeuralNetwork
-from src.draw import draw_grid
-
+from src.core.neuron import NeuralNetwork
 from src.structure.cleaner import Cleaner
 from src.structure.gameboard import GameBoard
 from src.structure.object import Object
@@ -14,8 +12,8 @@ network = NeuralNetwork()
 
 # Initialize display
 pygame.init()
-screen = pygame.display.set_mode(SCREEN_SIZE)
 pygame.display.set_caption("PRO CLEANER 9000")
+screen = pygame.display.set_mode(SCREEN_SIZE)
 clock = pygame.time.Clock()
 
 # Load images
@@ -44,7 +42,7 @@ img_path = {
 }
 
 # Initialize board
-BOARD = GameBoard(NUM_COLS, NUM_ROWS)
+BOARD = GameBoard(WIDTH, HEIGHT)
 
 # Add objects to the game board
 BOARD.add_furniture(Object("chair", (0, 3), images["chair"].get_size()))
@@ -64,10 +62,10 @@ agent.assign_screen(screen)
 agent.assign_network(network)
 
 # Add random dirt objects
-BOARD.generate_random_dirt(10)
+BOARD.generate_random_dirt(15)
 
 print("INITIAL GAME BOARD")
-draw_grid(BOARD)
+BOARD.print_in_console()
 BOARD.point_goal = (0, 8)
 play = True
 
@@ -80,19 +78,15 @@ while play:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                if agent.pos_y() > 0:
                     agent.move(0, -1)
 
             if event.key == pygame.K_DOWN:
-                if agent.pos_y() < NUM_ROWS - 1:
                     agent.move(0, 1)
 
             if event.key == pygame.K_LEFT:
-                if agent.pos_x() > 0:
                     agent.move(-1, 0)
 
             if event.key == pygame.K_RIGHT:
-                if agent.pos_x() < NUM_COLS - 1:
                     agent.move(1, 0)
 
             # Some predefined position settings
@@ -111,7 +105,7 @@ while play:
             # Print nic looking grid in console
             if event.key == pygame.K_HOME:
                 print("\nCURRENT GAME BOARD")
-                draw_grid(BOARD)
+                BOARD.print_in_console()
 
             # Present the A* algorithm (move on path)
             if event.key == pygame.K_END:
@@ -135,11 +129,12 @@ while play:
             if event.key == pygame.K_F10:
                 agent.clean_next()
 
+            # Turn automatic cleaning ON / OFF
             if event.key == pygame.K_F11:
-                agent.set_to_cleaning()
+                agent.set_cleaning()
 
             if event.key == pygame.K_F12:
-                agent.create_and_clean(img_path)
+                agent.generate_and_clean(img_path)
 
     BOARD.draw()
     agent.draw()

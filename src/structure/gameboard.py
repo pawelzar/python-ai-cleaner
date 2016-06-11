@@ -16,6 +16,7 @@ class GameBoard(GridWithWeights):
         self.screen = None
         self.images = None
         self.station = None
+        self.point_goal = None
 
     def add_furniture(self, furniture):
         """Add object to the board that the agent can not pass through."""
@@ -70,8 +71,16 @@ class GameBoard(GridWithWeights):
                 del self.objects[position]
                 del self.weights[position]
 
+    def clean_all_dirt(self):
+        for i, item in enumerate(self.dirt):
+            del self.objects[item.position]
+            del self.weights[item.position]
+        self.dirt = []
+
     def generate_random_dirt(self, amount):
         """Fill board with dirt placed on random positions. Also assign proper weights and sign."""
+        self.clean_all_dirt()
+
         for i in range(amount):
             (x, y) = (randrange(0, NUM_COLS, 1), randrange(0, NUM_ROWS, 1))
             while (x, y) in self.get_points():
@@ -116,6 +125,9 @@ class GameBoard(GridWithWeights):
 
         for furniture in self.furniture + [self.station]:
             self.screen.blit(self.images[furniture.name], furniture.screen_position())
+
+        # Draw crossed lines at point goal
+        self.draw_target(self.point_goal)
 
     def draw_target(self, point_goal):
         """Draw crossed lines at the target point on screen."""

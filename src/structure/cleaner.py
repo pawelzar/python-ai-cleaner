@@ -38,6 +38,10 @@ class Cleaner(Object):
         """Assign previously created neural network for image recognition."""
         self.network = network
 
+    def set_to_cleaning(self):
+        """Informs agent to clean all objects on board. Changes clean_all flag to True."""
+        self.clean_all = True
+
     def move(self, x, y):
         """Shift the position of the object on the board by vector (x (horizontally) and y (vertically))."""
         self.position = (self.position[0] + x, self.position[1] + y)
@@ -65,12 +69,6 @@ class Cleaner(Object):
         self.battery = 100
         self.soap = 100
         self.capacity = 100
-
-    def clean(self):
-        """Remove object (dirt) from board at current position."""
-        if self.position in self.data.keys():
-            self.board.clean_object(self.position)
-            del self.data[self.position]
 
     def recognize(self, images, position=("", )):
         """Using assigned neural network, recognize object by image at current position."""
@@ -105,7 +103,9 @@ class Cleaner(Object):
             print("\nCOLLECTED INFORMATION ABOUT DIRT.")
 
     def move_to(self, point_goal, static_board=True, draw=True):
-        """Move agent from it's current position to position_goal.
+        """Move agent from it's current position to point_goal.
+
+        Path to destination point is created using A* algorithm.
 
         Parameters:
         - static_board - draw agent on new position, but leave previous positions on screen
@@ -138,14 +138,30 @@ class Cleaner(Object):
                 self.move(*directions[direction])
 
             if not static_board:
-                self.board.draw()
+                self.board.draw()  # update screen (removes images that are not actual)
 
             self.screen.blit(self.image, self.screen_position())
             pygame.time.Clock().tick(60)
             pygame.display.update()
-            pygame.time.wait(20)
+            pygame.time.wait(20)  # milliseconds pause before next step
 
         self.image = pygame.transform.rotate(self.image, -rotation)
+
+    def clean(self):
+        """Remove object (dirt) from board at current position."""
+        if self.position in self.data.keys():
+            self.board.clean_object(self.position)
+            del self.data[self.position]
+
+    def clean_next(self):
+        """If clean_all flag is set, then this function cleans one element at a time."""
+        if self.data:
+            destination = self.find_closest()
+            self.board.point_goal = destination
+            self.move_to(destination, False, False)
+            self.clean()
+        else:
+            self.clean_all = False
 
     def clean_all(self):
         """Remove all objects (dirt) from board."""
@@ -154,13 +170,13 @@ class Cleaner(Object):
         else:
             print("\nCLEANING...")
 
-            #while self.data:
-            #    point_goal = self.find_closest()
-            #    self.move_to(point_goal, False, False)
-            #    self.clean()
+            # while self.data:
+            #     point_goal = self.find_closest()
+            #     self.move_to(point_goal, False, False)
+            #     self.clean()
 
             for pos in sorted(self.data.keys()):
-                #print pos
+                # print pos
                 self.move_to(pos, False, False)
                 self.clean()
 
@@ -168,34 +184,27 @@ class Cleaner(Object):
 
     def draw(self):
         """Draw agent image on previously assigned screen."""
+        if self.clean_all:
+            self.clean_next()
         self.screen.blit(self.image, self.screen_position())
 
+    def draw_all(self):
+        """Draw agent and board assigned to it."""
+        self.board.draw()
+        if self.clean_all:
+            self.clean_next()  # if clean_all flag is set, then each iteration of main game loop cleans one object
+        self.draw()
 
-    def wtf(self, clock):
-        i = 1
-        val = 0
-        while True:
-            i+=1
-            x=[(1,0), (-1,0)]
-            self.move(*x[val])
-            if i % NUM_COLS == 0:
-                i = 1
-                val = not val
+    def create_and_clean(self, images):
+        """Generates new random dirt on board and automatically sets agent to clean all."""
+        if not self.board.dirt:
+            self.board.generate_random_dirt(25)
             self.board.draw()
-            self.screen.blit(self.image, self.screen_position())
-            pygame.time.wait(0)
-            clock.tick(60)
+            self.draw()
             pygame.display.update()
-
-    def set_to_cleaning(self):
+            # agent.set_position(0, 0)
+        self.collect_data(images)
         self.clean_all = True
-
-    def clean_2(self):
-        if self.clean_all and self.data:
-            self.move_to(self.find_closest(), False, False)
-            self.clean()
-        else:
-            self.clean_all = False
 
     def make_decision(self):
         pass

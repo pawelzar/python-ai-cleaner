@@ -70,7 +70,9 @@ print("INITIAL GAME BOARD")
 draw_grid(BOARD)
 point_goal = (0, 8)
 play = True
-
+i=1
+val = 0
+clean_all=0
 # Main loop of the program
 while play:
     for event in pygame.event.get():
@@ -108,39 +110,63 @@ while play:
                 agent.position = (0, 0)
                 point_goal = (11, 11)
 
-            # Present the A* algorithm (move on path)
-            if event.key == pygame.K_END:
-                agent.move_to(point_goal)
-
-            if event.key == pygame.K_BACKSPACE:
-                agent.recognize(img_path)
-
-            if event.key == pygame.K_c:
-                agent.clean()
-
-            if event.key == pygame.K_s:
-                agent.go_to_station()
-
-            if event.key == pygame.K_0:
-                agent.clean_all()
-
-            if event.key == pygame.K_9:
-                if not BOARD.dirt:
-                    BOARD.generate_random_dirt(20)
-                    agent.set_position(0, 0)
-
-            if event.key == pygame.K_8:
-                agent.collect_data(img_path)
-
+            # Print nic looking grid in console
             if event.key == pygame.K_HOME:
                 print("\nCURRENT GAME BOARD")
                 draw_grid(BOARD)
 
+            # Present the A* algorithm (move on path)
+            if event.key == pygame.K_END:
+                agent.move_to(point_goal)
+
+            if event.key == pygame.K_F1:
+                agent.recognize(img_path)
+
+            if event.key == pygame.K_F2:
+                agent.collect_data(img_path)
+
+            if event.key == pygame.K_F3:
+                agent.go_to_station()
+
+            if event.key == pygame.K_F10:
+                agent.clean()
+
+            if event.key == pygame.K_F11:
+                agent.set_to_cleaning()
+
+            if event.key == pygame.K_F12:
+                if not BOARD.dirt:
+                    BOARD.generate_random_dirt(25)
+                    BOARD.draw()
+                    agent.draw()
+                    pygame.display.update()
+                    #agent.set_position(0, 0)
+                agent.collect_data(img_path)
+                agent.set_to_cleaning()
+            if event.key == pygame.K_c:
+                val = not val
+
+    '''if clean and BOARD.dirt:
+        agent.move_to(agent.find_closest(), False, False)
+        agent.clean()
+    else:
+        clean=0'''
+    if agent.clean_all:
+        agent.clean_2()
     BOARD.draw()
-    BOARD.draw_target(point_goal)
+    #BOARD.draw_target(point_goal)
     agent.draw()
+    #f val:
+    #    agent.wtf(clock)
+    '''i+=1
+    x=[(1,0), (-1,0)]
+    agent.move(*x[val])
+    if i % NUM_COLS == 0:
+        i = 1
+        val = not val
+    pygame.time.wait(0)'''
 
     clock.tick(60)
-    pygame.display.flip()
+    pygame.display.update()
 
 pygame.quit()

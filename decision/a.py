@@ -32,4 +32,5 @@ for i, node in enumerate(str(tree).split('{')):
 #print type(tree)
 print classify2("short", "1", "empty", tree)
 print classify2("far", "3", "full", tree)
+print classify2("short", "3", "empty", tree)
 #print dtree.get_classification(["short", "1", "empty"], tree)

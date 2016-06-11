@@ -20,6 +20,7 @@ class Cleaner(Object):
         self.board = None
         self.screen = None
         self.network = None
+        self.clean_all = False
 
     def set_position(self, x, y):
         """Set the position of the object on the board."""
@@ -140,8 +141,9 @@ class Cleaner(Object):
                 self.board.draw()
 
             self.screen.blit(self.image, self.screen_position())
-            pygame.display.flip()
-            pygame.time.wait(60)
+            pygame.time.Clock().tick(60)
+            pygame.display.update()
+            pygame.time.wait(20)
 
         self.image = pygame.transform.rotate(self.image, -rotation)
 
@@ -152,9 +154,14 @@ class Cleaner(Object):
         else:
             print("\nCLEANING...")
 
-            while self.data:
-                point_goal = self.find_closest()
-                self.move_to(point_goal, False, False)
+            #while self.data:
+            #    point_goal = self.find_closest()
+            #    self.move_to(point_goal, False, False)
+            #    self.clean()
+
+            for pos in sorted(self.data.keys()):
+                #print pos
+                self.move_to(pos, False, False)
                 self.clean()
 
             print("\nCLEAN AS A WHISTLE, SIR!")
@@ -162,3 +169,33 @@ class Cleaner(Object):
     def draw(self):
         """Draw agent image on previously assigned screen."""
         self.screen.blit(self.image, self.screen_position())
+
+
+    def wtf(self, clock):
+        i = 1
+        val = 0
+        while True:
+            i+=1
+            x=[(1,0), (-1,0)]
+            self.move(*x[val])
+            if i % NUM_COLS == 0:
+                i = 1
+                val = not val
+            self.board.draw()
+            self.screen.blit(self.image, self.screen_position())
+            pygame.time.wait(0)
+            clock.tick(60)
+            pygame.display.update()
+
+    def set_to_cleaning(self):
+        self.clean_all = True
+
+    def clean_2(self):
+        if self.clean_all and self.data:
+            self.move_to(self.find_closest(), False, False)
+            self.clean()
+        else:
+            self.clean_all = False
+
+    def make_decision(self):
+        pass

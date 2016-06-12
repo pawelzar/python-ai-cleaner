@@ -2,19 +2,20 @@ import cv2
 import pygame
 
 from object import Object
-from src.core.algorithm import a_star_search, reconstruct_path, path_as_orders
+from src.core.algorithm import a_star_search, heuristic, reconstruct_path, path_as_orders
 from src.core.neuron import NeuralTest
 from src.extra.draw import draw_grid
 from src.extra.settings import WIDTH, HEIGHT
+from src.extra.fuzzy import *
 
 
 class Cleaner(Object):
     def __init__(self, name, position, texture):
         super(Cleaner, self).__init__(name, position)
         self.image = pygame.image.load(texture).convert_alpha()
-        self.battery = 100
+        self.battery = 150
         self.soap = 100
-        self.container = 100
+        self.container = 0
         self.data = dict()
         self.obj_images = dict()  # paths of images (for neural network)
         self.board = None
@@ -61,6 +62,7 @@ class Cleaner(Object):
         destination = (self.position[0] + vector[0], self.position[1] + vector[1])
         if self.board.passable(destination) and self.board.in_bounds(destination):
             self.position = destination
+            self.battery -= 0.2
 
     def find_closest(self):
         """Find position of dirt, which is closest from current position of the agent.
@@ -78,13 +80,15 @@ class Cleaner(Object):
 
     def go_to_station(self):
         """Move agent from it's current position to the position of the docking station."""
+        self.board.point_goal = self.board.station.position
         self.move_to(self.board.station.position, static_board=False)
 
     def refresh(self):
         """Refill agent's properties."""
+        print("\nAGENT RELOADED IN DOCKING STATION.")
         self.battery = 100
         self.soap = 100
-        self.capacity = 100
+        self.container = 0
 
     def recognize(self, position=("", )):
         """Using assigned neural network, recognize object by image at current position."""
@@ -166,6 +170,17 @@ class Cleaner(Object):
         """Remove object (dirt) from board at current position."""
         if self.position in self.data.keys():
             self.board.clean_object(self.position)
+            if self.data[self.position] == "cat":
+                self.battery -= 2
+                self.soap -= 15
+                self.container += 10
+            elif self.data[self.position] == "water":
+                self.battery -= 2
+                self.soap -= 4
+                self.container += 5
+            else:
+                self.battery -= 1
+                self.container += 20
             del self.data[self.position]
 
     def clean_next(self):
@@ -180,11 +195,47 @@ class Cleaner(Object):
             self.clean_all = False
         else:  # there is still some dirt on the board, but the agent didn't collect information about it
             print("\nNO INFORMATION ABOUT DIRT.")
+            self.clean_all = False
+
+    def decide_and_clean(self):
+        """Use decision tree to decide which action the agent should take."""
+        if self.data:
+            for position, item in sorted(self.data.items()):
+                instance = item  # name of the object (in this situation type of the dirt)
+
+                # gather information in descriptive form using fuzzy functions
+                distance = fuzzy_distance(heuristic(self.position, position))
+                soap = fuzzy_soap(self.soap)
+                battery = fuzzy_battery(self.battery)
+                container = fuzzy_container(self.container)
+
+                result = self.classification.classify(distance, instance, soap, battery, container)
+                print("distance: {}, type: {}, soap level: {}, battery: {}, container: {}, decision: {}".
+                      format(*map(str.upper, [distance, instance, soap, battery, container, result])))
+                if result == "True":
+                    self.board.point_goal = position
+                    self.move_to(position, False, False)
+                    self.clean()
+                    break
+            else:
+                self.go_to_station()
+                self.refresh()
+                pygame.time.wait(200)
+
+        elif not self.board.dirt:  # if agent collected all the information and cleaned all dirt from the board
+            self.go_to_station()
+            print("\nCLEANING COMPLETED.")
+            self.clean_all = False
+        else:  # there is still some dirt on the board, but the agent didn't collect information about it
+            print("\nNO INFORMATION ABOUT DIRT.")
+            self.clean_all = False
 
     def draw(self):
         """Draw agent image on previously assigned screen."""
         if self.clean_all:
-            self.clean_next()
+            # self.clean_next()
+            self.decide_and_clean()
+            self.print_stats()
         self.screen.blit(self.image, self.screen_position())
 
     def generate_and_clean(self, amount):
@@ -200,3 +251,6 @@ class Cleaner(Object):
 
     def make_decision(self):
         pass
+
+    def print_stats(self):
+        print("battery: {}/150, soap: {}/100, container {}/100".format(self.battery, self.soap, self.container))

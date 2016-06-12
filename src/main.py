@@ -10,8 +10,9 @@ from src.structure.object import Object
 # Initialize neural network
 network = NeuralNetwork()
 
-# Initialize classification (creates decision tree)
+# Initialize classification (creates decision tree based on training set)
 classification = Classification("train_set")
+classification.draw_tree()
 
 # Initialize display
 pygame.init()
@@ -81,7 +82,6 @@ while PLAY:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             PLAY = False
-            break
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:

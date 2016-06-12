@@ -3,25 +3,13 @@ def majority_value(data, target_attr):
 
 
 def most_frequent(lst):
-    highest_freq = 0
-    most_freq = None
-
-    for val in unique(lst):
-        if lst.count(val) > highest_freq:
-            most_freq = val
-            highest_freq = lst.count(val)
-            
-    return most_freq
+    """Return which result is the most common."""
+    return max(unique(lst), key=lambda x: lst.count(x))
 
 
 def unique(lst):
-    unique_lst = []
-
-    for item in lst:
-        if unique_lst.count(item) <= 0:
-            unique_lst.append(item)
-
-    return unique_lst
+    """Return list of unique values for given list."""
+    return list(set(lst))
 
 
 def get_values(data, attr):

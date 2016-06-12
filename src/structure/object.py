@@ -1,4 +1,4 @@
-from src.core.settings import CELL_HEIGHT, CELL_WIDTH
+from src.extra.settings import CELL_HEIGHT, CELL_WIDTH
 
 
 class Object(object):
@@ -29,3 +29,7 @@ class Object(object):
     def screen_position(self):
         """Return exact position in pixels on the screen."""
         return self.position[0] * CELL_WIDTH, self.position[1] * CELL_HEIGHT
+
+    def set_position(self, position):
+        """Set the position of the object on the board."""
+        self.position = position

@@ -1,29 +1,27 @@
 import cv2
 import pygame
-from src.core.draw import draw_grid
-from src.core.neuron import NeuralTest
-from src.core.settings import WIDTH, HEIGHT
 
 from object import Object
 from src.core.algorithm import a_star_search, reconstruct_path, path_as_orders
+from src.core.neuron import NeuralTest
+from src.extra.draw import draw_grid
+from src.extra.settings import WIDTH, HEIGHT
 
 
 class Cleaner(Object):
-    def __init__(self, name, position):
+    def __init__(self, name, position, texture):
         super(Cleaner, self).__init__(name, position)
-        self.image = pygame.image.load("../images/cleaner.png").convert_alpha()
+        self.image = pygame.image.load(texture).convert_alpha()
         self.battery = 100
         self.soap = 100
-        self.capacity = 100
+        self.container = 100
         self.data = dict()
+        self.obj_images = dict()  # paths of images (for neural network)
         self.board = None
         self.screen = None
         self.network = None
+        self.classification = None
         self.clean_all = False
-
-    def set_position(self, x, y):
-        """Set the position of the object on the board."""
-        self.position = (x, y)
 
     def assign_board(self, board):
         """Assign the board, on which the agent will be doing tasks (move, clean etc.)."""
@@ -36,6 +34,14 @@ class Cleaner(Object):
     def assign_network(self, network):
         """Assign previously created neural network for image recognition."""
         self.network = network
+
+    def assign_classification(self, classification):
+        """Assign previously created classification (which creates decision tree) for decision making."""
+        self.classification = classification
+
+    def assign_images(self, images):
+        """Assign path of images. This is necessary for image recognition (algorithm loads image using path)."""
+        self.obj_images = images
 
     def set_cleaning(self):
         """Informs agent to clean all objects on board. Changes clean_all flag to True."""
@@ -50,9 +56,9 @@ class Cleaner(Object):
             print("\nCLEANING...")
             self.clean_all = True
 
-    def move(self, x, y):
+    def move(self, vector):
         """Shift the position of the object on the board by vector (x (horizontally) and y (vertically))."""
-        destination = (self.position[0] + x, self.position[1] + y)
+        destination = (self.position[0] + vector[0], self.position[1] + vector[1])
         if self.board.passable(destination) and self.board.in_bounds(destination):
             self.position = destination
 
@@ -72,7 +78,7 @@ class Cleaner(Object):
 
     def go_to_station(self):
         """Move agent from it's current position to the position of the docking station."""
-        self.move_to(self.board.station.position)
+        self.move_to(self.board.station.position, static_board=False)
 
     def refresh(self):
         """Refill agent's properties."""
@@ -80,13 +86,13 @@ class Cleaner(Object):
         self.soap = 100
         self.capacity = 100
 
-    def recognize(self, images, position=("", )):
+    def recognize(self, position=("", )):
         """Using assigned neural network, recognize object by image at current position."""
-        if isinstance(position[0], str):
+        if isinstance(position[0], str):  # check if optional parameter was provided
             position = self.position
 
         recognition = ""
-        image = images.get(self.board.get_object_name(position), "")
+        image = self.obj_images.get(self.board.get_object_name(position), "")
 
         if image:
             test = NeuralTest(cv2.imread(image))
@@ -97,14 +103,14 @@ class Cleaner(Object):
         if recognition:
             self.data[position] = recognition
 
-    def collect_data(self, images):
+    def collect_data(self):
         """Using assigned neural network, recognize all images on the screen and save it if the object is dirt."""
         self.data = dict()
         print("\nCOLLECTING DATA...")
 
         for y in range(self.board.height):
             for x in range(self.board.width):
-                self.recognize(images, (x, y))
+                self.recognize((x, y))
 
         if not self.data:
             print("\nSORRY, THERE IS NOTHING TO CLEAN.")
@@ -128,9 +134,9 @@ class Cleaner(Object):
             draw_grid(self.board, path=reconstruction, start=self.position, goal=point_goal)
 
             print("\nORDERS FOR AGENT TO MOVE")
-            print(", ".join(str(x) for x in path_as_orders(reconstruction)))
+            print(", ".join(path_as_orders(reconstruction)))
 
-        directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]  # [up, right, down, left]
+        directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]  # [up, right, down, left] - clockwise
         direction = 0
         rotation = 0
 
@@ -144,13 +150,13 @@ class Cleaner(Object):
                 self.image = pygame.transform.rotate(self.image, 90)
                 direction = (direction - 1) % 4
             else:
-                self.move(*directions[direction])
+                self.move(directions[direction])
 
             if not static_board:
                 self.board.draw()  # update screen (removes images that are not actual)
 
             self.screen.blit(self.image, self.screen_position())
-            pygame.time.Clock().tick(60)
+            pygame.time.Clock().tick(60)  # frames per second
             pygame.display.update()
             pygame.time.wait(20)  # milliseconds pause before next step
 
@@ -163,14 +169,17 @@ class Cleaner(Object):
             del self.data[self.position]
 
     def clean_next(self):
-        """Find closest object, move to it and clean it."""
+        """Find closest object, move to it and clean it. Provide proper information in console"""
         if self.data:
             destination = self.find_closest()
             self.board.point_goal = destination
             self.move_to(destination, False, False)
             self.clean()
-        else:
+        elif not self.board.dirt:  # if agent collected all the information and cleaned all dirt from the board
+            print("\nCLEANING COMPLETED.")
             self.clean_all = False
+        else:  # there is still some dirt on the board, but the agent didn't collect information about it
+            print("\nNO INFORMATION ABOUT DIRT.")
 
     def draw(self):
         """Draw agent image on previously assigned screen."""
@@ -178,16 +187,16 @@ class Cleaner(Object):
             self.clean_next()
         self.screen.blit(self.image, self.screen_position())
 
-    def generate_and_clean(self, images):
+    def generate_and_clean(self, amount):
         """Generates new random dirt on board and automatically sets agent to clean all."""
         if not self.board.dirt:
-            self.board.generate_random_dirt(25)
+            self.board.generate_random_dirt(amount)
             self.board.draw()
             self.draw()
             pygame.display.update()
-            # agent.set_position(0, 0)
-        self.collect_data(images)
-        self.clean_all = True
+            # agent.set_position((0, 0))
+        self.collect_data()
+        self.set_cleaning()
 
     def make_decision(self):
         pass

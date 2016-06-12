@@ -23,3 +23,8 @@ def draw_grid(graph, **style):
     """
     for y in range(graph.height):
         print("".join(draw_point(graph, (x, y), style) for x in range(graph.width)))
+
+
+def draw_tree(tree):
+    for i, node in enumerate(str(tree).split('{')):
+        print str(node).strip('}')

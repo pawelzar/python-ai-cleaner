@@ -4,8 +4,8 @@ import pygame
 
 from graph import GridWithWeights
 from object import Object
-from src.core.settings import *
-from src.core.draw import draw_grid
+from src.extra.draw import draw_grid
+from src.extra.settings import *
 
 
 class GameBoard(GridWithWeights):

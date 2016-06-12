@@ -1,14 +1,17 @@
 import pygame
-from src.core.settings import *
 
+from src.core.classification import Classification
 from src.core.neuron import NeuralNetwork
+from src.extra.settings import *
 from src.structure.cleaner import Cleaner
 from src.structure.gameboard import GameBoard
 from src.structure.object import Object
 
-
 # Initialize neural network
 network = NeuralNetwork()
+
+# Initialize classification (creates decision tree)
+classification = Classification("train_set")
 
 # Initialize display
 pygame.init()
@@ -16,8 +19,10 @@ pygame.display.set_caption("PRO CLEANER 9000")
 screen = pygame.display.set_mode(SCREEN_SIZE)
 clock = pygame.time.Clock()
 
-# Load images
+# Load paths of images
 img_path = {
+    "floor": "../images/floor_cell.jpg",
+    "agent": "../images/cleaner.png",
     "station": "../images/station.png",
     "sofa": "../images/furniture_sofa.png",
     "chair": "../images/furniture_chair.png",
@@ -25,15 +30,13 @@ img_path = {
     "palm": "../images/palm.png",
     "dust": "../images/dirt_dust.png",
     "water": "../images/dirt_water.png",
-    "cat": "../images/dirt_cat.png",
-    "floor": "../images/floor_cell.jpg"
+    "cat": "../images/dirt_cat.png"
 }
 
-images = dict()
-for name, path in img_path.items():
-    # load every image, use transparency for png images
-    images[name] = pygame.image.load(path).convert_alpha()
+# Load every image, use transparency for png images
+images = {name: pygame.image.load(path).convert_alpha() for name, path in img_path.items()}
 
+# Load special images (with rotation, scaled)
 images["chair_left"] = pygame.transform.rotate(
     pygame.image.load("../images/furniture_chair.png").convert_alpha(), -90)
 images["chair_right"] = pygame.transform.rotate(
@@ -58,12 +61,14 @@ BOARD.assign_images(images)
 BOARD.assign_screen(screen)
 
 # Initialize cleaner
-AGENT = Cleaner("agent", (0, 0))
+AGENT = Cleaner("agent", (0, 0), img_path["agent"])
 AGENT.assign_board(BOARD)
 AGENT.assign_screen(screen)
 AGENT.assign_network(network)
+AGENT.assign_classification(classification)
+AGENT.assign_images(img_path)
 
-# Add random dirt objects
+# Add objects of type dirt at random positions (number of objects as parameter)
 BOARD.generate_random_dirt(15)
 
 BOARD.assign_agent(AGENT)
@@ -80,16 +85,16 @@ while PLAY:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                AGENT.move(0, -1)
+                AGENT.move(UP)
 
             if event.key == pygame.K_DOWN:
-                AGENT.move(0, 1)
+                AGENT.move(DOWN)
 
             if event.key == pygame.K_LEFT:
-                AGENT.move(-1, 0)
+                AGENT.move(LEFT)
 
             if event.key == pygame.K_RIGHT:
-                AGENT.move(1, 0)
+                AGENT.move(RIGHT)
 
             # Some predefined position settings
             if event.key == pygame.K_1:
@@ -113,10 +118,10 @@ while PLAY:
                 AGENT.move_to(BOARD.point_goal)
 
             if event.key == pygame.K_F1:
-                AGENT.recognize(img_path)
+                AGENT.recognize()
 
             if event.key == pygame.K_F2:
-                AGENT.collect_data(img_path)
+                AGENT.collect_data()
 
             if event.key == pygame.K_F3:
                 AGENT.go_to_station()
@@ -136,7 +141,7 @@ while PLAY:
 
             # Fill board randomly and immediately activate cleaning
             if event.key == pygame.K_F12:
-                AGENT.generate_and_clean(img_path)
+                AGENT.generate_and_clean(20)
 
     BOARD.draw()
     AGENT.draw()

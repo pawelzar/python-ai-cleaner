@@ -11,7 +11,7 @@ def classify(distance, instance, soap_level, battery, container, struct):
     return dtree.get_classification(struct, collection)
 
 
-fin = open("../src/train_set", "r")
+fin = open("../src/train", "r")
 
 lines = fin.readlines()
 # print "\n".join(lines)

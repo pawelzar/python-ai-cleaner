@@ -1,4 +1,4 @@
-train_set = open("../train_set", "w")
+train_set = open("../train", "w")
 train_set.write("DISTANCE    TYPE    SOAP    BATTERY    CONTAINER    CLEAN" + "\n")
 
 for distance in ["close", "medium", "far"]:
@@ -8,7 +8,8 @@ for distance in ["close", "medium", "far"]:
                 for container in ["empty", "half", "full"]:
                     # result = {"low": "False"}.get(battery, "True")
                     result = "False" if battery == "low" else \
-                        ("False" if (instance == "cat" or instance == "water") and soap == "low" else "True")
+                        ("False" if (instance == "cat" or instance == "water") and soap == "low"
+                         else "False" if container == "full" else "True")
                     line = (distance.ljust(12, " ") +
                             instance.ljust(8, " ") +
                             soap.ljust(8, " ") +

@@ -86,7 +86,7 @@ class Cleaner(Object):
     def refresh(self):
         """Refill agent's properties."""
         print("\nAGENT RELOADED IN DOCKING STATION.")
-        self.battery = 100
+        self.battery = 150
         self.soap = 100
         self.container = 0
 
@@ -179,7 +179,7 @@ class Cleaner(Object):
                 self.soap -= 4
                 self.container += 5
             else:
-                self.battery -= 1
+                self.battery -= 1.4
                 self.container += 20
             del self.data[self.position]
 
@@ -197,21 +197,25 @@ class Cleaner(Object):
             print("\nNO INFORMATION ABOUT DIRT.")
             self.clean_all = False
 
+    def make_decision(self, position, item):
+        instance = item  # name of the object (in this situation type of the dirt)
+
+        # gather information in descriptive form using fuzzy functions
+        distance = fuzzy_distance(heuristic(self.position, position))
+        soap = fuzzy_soap(self.soap)
+        battery = fuzzy_battery(self.battery)
+        container = fuzzy_container(self.container)
+
+        result = self.classification.classify(distance, instance, soap, battery, container)
+        print("distance: {}, type: {}, soap level: {}, battery: {}, container: {}, decision: {}".
+              format(*map(str.upper, [distance, instance, soap, battery, container, result])))
+        return result
+
     def decide_and_clean(self):
         """Use decision tree to decide which action the agent should take."""
         if self.data:
             for position, item in sorted(self.data.items()):
-                instance = item  # name of the object (in this situation type of the dirt)
-
-                # gather information in descriptive form using fuzzy functions
-                distance = fuzzy_distance(heuristic(self.position, position))
-                soap = fuzzy_soap(self.soap)
-                battery = fuzzy_battery(self.battery)
-                container = fuzzy_container(self.container)
-
-                result = self.classification.classify(distance, instance, soap, battery, container)
-                print("distance: {}, type: {}, soap level: {}, battery: {}, container: {}, decision: {}".
-                      format(*map(str.upper, [distance, instance, soap, battery, container, result])))
+                result = self.make_decision(position, item)
                 if result == "True":
                     self.board.point_goal = position
                     self.move_to(position, False, False)
@@ -248,9 +252,6 @@ class Cleaner(Object):
             # agent.set_position((0, 0))
         self.collect_data()
         self.set_cleaning()
-
-    def make_decision(self):
-        pass
 
     def print_stats(self):
         print("battery: {}/150, soap: {}/100, container {}/100".format(self.battery, self.soap, self.container))

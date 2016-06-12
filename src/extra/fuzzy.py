@@ -19,16 +19,16 @@ def fuzzy_soap(soap):
 def fuzzy_battery(battery):
     if battery < 20:
         return "low"
-    elif battery < 70:
+    elif battery < 90:
         return "medium"
     else:
         return "high"
 
 
 def fuzzy_container(container):
-    if container == 0:
+    if container < 10:
         return "empty"
-    elif container == 100:
-        return "full"
-    else:
+    elif container < 90:
         return "half"
+    else:
+        return "full"

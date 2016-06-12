@@ -1,6 +1,6 @@
 from src.core.dtree import create_decision_tree, get_classification
 from src.core.id3 import gain
-from src.extra.draw import draw_tree
+from src.extra.draw import draw_tree as draw
 
 
 class Classification:
@@ -29,4 +29,4 @@ class Classification:
         return get_classification(self.tree, collection)
 
     def draw_tree(self):
-        draw_tree(self)
+        draw(self.tree)

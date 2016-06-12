@@ -11,7 +11,7 @@ from src.structure.object import Object
 network = NeuralNetwork()
 
 # Initialize classification (creates decision tree based on training set)
-classification = Classification("train_set")
+classification = Classification("train")
 classification.draw_tree()
 
 # Initialize display

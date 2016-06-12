@@ -2,7 +2,7 @@ from src.structure.pqueue import PriorityQueue
 
 
 def heuristic(a, b):
-    """Return absolute distance from point a to b."""
+    """Return absolute distance from point a to b. Strictly horizontal and/or vertical path."""
     (x1, y1) = a
     (x2, y2) = b
     return abs(x1 - x2) + abs(y1 - y2)
@@ -14,7 +14,7 @@ def count_cost(start, goal, state):
     (x_next, y_next) = goal
     new_state = state
     cost = 0
-    
+
     if state == 'up':  # 0 degrees (UP)
         if y_next < y:
             pass

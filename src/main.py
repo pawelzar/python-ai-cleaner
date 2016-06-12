@@ -17,34 +17,35 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 clock = pygame.time.Clock()
 
 # Load images
-images = {
-    "agent": pygame.image.load("../images/cleaner.png").convert_alpha(),
-    "floor": pygame.transform.scale(pygame.image.load("../images/floor_cell.jpg").convert_alpha(),
-                                    (CELL_WIDTH - CELL_MARGIN, CELL_HEIGHT - CELL_MARGIN)),
-    "station": pygame.image.load("../images/station.png").convert_alpha(),
-    "sofa": pygame.image.load("../images/furniture_sofa.png").convert_alpha(),
-    "chair": pygame.image.load("../images/furniture_chair.png").convert_alpha(),
-    "chair_left": pygame.transform.rotate(pygame.image.load("../images/furniture_chair.png").convert_alpha(), -90),
-    "chair_right": pygame.transform.rotate(pygame.image.load("../images/furniture_chair.png").convert_alpha(), 90),
-    "desk": pygame.image.load("../images/furniture_desk.png").convert_alpha(),
-    "palm": pygame.image.load("../images/palm.png").convert_alpha(),
-
-    "dust": pygame.image.load("../images/dirt_dust.png").convert_alpha(),
-    "water": pygame.image.load("../images/dirt_water.png").convert_alpha(),
-    "cat": pygame.image.load("../images/dirt_cat.png").convert_alpha()
-}
-
 img_path = {
+    "station": "../images/station.png",
+    "sofa": "../images/furniture_sofa.png",
+    "chair": "../images/furniture_chair.png",
+    "desk": "../images/furniture_desk.png",
+    "palm": "../images/palm.png",
     "dust": "../images/dirt_dust.png",
     "water": "../images/dirt_water.png",
     "cat": "../images/dirt_cat.png",
     "floor": "../images/floor_cell.jpg"
 }
 
+images = dict()
+for name, path in img_path.items():
+    # load every image, use transparency for png images
+    images[name] = pygame.image.load(path).convert_alpha()
+
+images["chair_left"] = pygame.transform.rotate(
+    pygame.image.load("../images/furniture_chair.png").convert_alpha(), -90)
+images["chair_right"] = pygame.transform.rotate(
+    pygame.image.load("../images/furniture_chair.png").convert_alpha(), 90)
+images["floor"] = pygame.transform.scale(
+    pygame.image.load("../images/floor_cell.jpg").convert_alpha(),
+    (CELL_WIDTH - CELL_MARGIN, CELL_HEIGHT - CELL_MARGIN))
+
 # Initialize board
 BOARD = GameBoard(WIDTH, HEIGHT)
 
-# Add objects to the game board
+# Add objects to the board
 BOARD.add_furniture(Object("chair", (0, 3), images["chair"].get_size()))
 BOARD.add_furniture(Object("chair_left", (7, 5), images["chair_left"].get_size()))
 BOARD.add_furniture(Object("chair_right", (15, 5), images["chair_right"].get_size()))
@@ -56,90 +57,91 @@ BOARD.add_station(Object("station", (0, 0), images["station"].get_size()))
 BOARD.assign_images(images)
 BOARD.assign_screen(screen)
 
-agent = Cleaner("agent", (0, 0))
-agent.assign_board(BOARD)
-agent.assign_screen(screen)
-agent.assign_network(network)
+# Initialize cleaner
+AGENT = Cleaner("agent", (0, 0))
+AGENT.assign_board(BOARD)
+AGENT.assign_screen(screen)
+AGENT.assign_network(network)
 
 # Add random dirt objects
 BOARD.generate_random_dirt(15)
 
-print("INITIAL GAME BOARD")
+BOARD.assign_agent(AGENT)
 BOARD.print_in_console()
 BOARD.point_goal = (0, 8)
-play = True
+PLAY = True
 
 # Main loop of the program
-while play:
+while PLAY:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            play = False
+            PLAY = False
             break
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                    agent.move(0, -1)
+                AGENT.move(0, -1)
 
             if event.key == pygame.K_DOWN:
-                    agent.move(0, 1)
+                AGENT.move(0, 1)
 
             if event.key == pygame.K_LEFT:
-                    agent.move(-1, 0)
+                AGENT.move(-1, 0)
 
             if event.key == pygame.K_RIGHT:
-                    agent.move(1, 0)
+                AGENT.move(1, 0)
 
             # Some predefined position settings
             if event.key == pygame.K_1:
-                agent.position = (0, 0)
+                AGENT.position = (0, 0)
                 BOARD.point_goal = (0, 8)
 
             if event.key == pygame.K_2:
-                agent.position = (11, 7)
+                AGENT.position = (11, 7)
                 BOARD.point_goal = (11, 11)
 
             if event.key == pygame.K_3:
-                agent.position = (0, 0)
+                AGENT.position = (0, 0)
                 BOARD.point_goal = (11, 11)
 
-            # Print nic looking grid in console
+            # Print nice looking grid in console
             if event.key == pygame.K_HOME:
-                print("\nCURRENT GAME BOARD")
                 BOARD.print_in_console()
 
-            # Present the A* algorithm (move on path)
+            # Present the A* algorithm (show agent movements on path)
             if event.key == pygame.K_END:
-                agent.move_to(BOARD.point_goal)
+                AGENT.move_to(BOARD.point_goal)
 
             if event.key == pygame.K_F1:
-                agent.recognize(img_path)
+                AGENT.recognize(img_path)
 
             if event.key == pygame.K_F2:
-                agent.collect_data(img_path)
+                AGENT.collect_data(img_path)
 
             if event.key == pygame.K_F3:
-                agent.go_to_station()
+                AGENT.go_to_station()
 
             if event.key == pygame.K_F4:
                 BOARD.generate_random_dirt(20)
 
             if event.key == pygame.K_F9:
-                agent.clean()
+                AGENT.clean()
 
             if event.key == pygame.K_F10:
-                agent.clean_next()
+                AGENT.clean_next()
 
             # Turn automatic cleaning ON / OFF
             if event.key == pygame.K_F11:
-                agent.set_cleaning()
+                AGENT.set_cleaning()
 
+            # Fill board randomly and immediately activate cleaning
             if event.key == pygame.K_F12:
-                agent.generate_and_clean(img_path)
+                AGENT.generate_and_clean(img_path)
 
     BOARD.draw()
-    agent.draw()
+    AGENT.draw()
 
-    clock.tick(60)
+    clock.tick(60)  # frames per second
     pygame.display.update()
 
 pygame.quit()

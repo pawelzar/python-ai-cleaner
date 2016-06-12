@@ -13,6 +13,7 @@ class GameBoard(GridWithWeights):
         super(GameBoard, self).__init__(width, height)
         self.furniture = []
         self.dirt = []
+        self.agent = None
         self.screen = None
         self.images = None
         self.station = None
@@ -32,6 +33,10 @@ class GameBoard(GridWithWeights):
     def add_station(self, station):
         """Assign station to the board."""
         self.station = station
+
+    def assign_agent(self, agent):
+        """Assign agent to the board. This is necessary for printing board in console."""
+        self.agent = agent
 
     def get_object_name(self, position):
         """Return name of the object placed at given position."""
@@ -135,4 +140,6 @@ class GameBoard(GridWithWeights):
                          ((point_goal[0] + 1) * CELL_WIDTH - 1, (point_goal[1] + 0.5) * CELL_HEIGHT - 1), 4)
 
     def print_in_console(self):
+        """Print nice looking grid in console."""
+        print("\nCURRENT GAME BOARD")
         draw_grid(self)

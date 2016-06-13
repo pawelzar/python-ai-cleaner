@@ -11,8 +11,9 @@ from src.structure.object import Object
 network = NeuralNetwork()
 
 # Initialize classification (creates decision tree based on training set)
-classification = Classification("train")
-classification.draw_tree()
+classification = Classification("train_cleaning", "train_refill")
+classification.draw_cleaning_tree()
+classification.draw_refill_tree()
 
 # Initialize display
 pygame.init()
@@ -24,6 +25,7 @@ clock = pygame.time.Clock()
 img_path = {
     "floor": "../images/floor_cell.jpg",
     "agent": "../images/cleaner.png",
+    "bin": "../images/bin.png",
     "station": "../images/station.png",
     "sofa": "../images/furniture_sofa.png",
     "chair": "../images/furniture_chair.png",
@@ -58,6 +60,7 @@ BOARD.add_furniture(Object("desk", (10, 2), images["desk"].get_size()))
 BOARD.add_furniture(Object("palm", (17, 1), images["palm"].get_size()))
 BOARD.add_furniture(Object("palm", (17, 9), images["palm"].get_size()))
 BOARD.add_station(Object("station", (0, 0), images["station"].get_size()))
+BOARD.add_bin(Object("bin", (0, HEIGHT-1), images["bin"].get_size()))
 BOARD.assign_images(images)
 BOARD.assign_screen(screen)
 

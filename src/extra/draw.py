@@ -5,6 +5,7 @@ def draw_point(graph, point, style):
     if point in graph.obstacles: sign = graph.obstacles[point]
     if point == graph.station.position: sign = "S"
     if point == graph.agent.position: sign = "A"
+    if point == graph.basket.position: sign = "B"
     if 'path' in style and point in style['path']: sign = "@"
     if 'start' in style and point == style['start']: sign = "A"
     if 'goal' in style and point == style['goal']: sign = "Z"

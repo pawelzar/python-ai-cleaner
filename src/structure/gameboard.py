@@ -17,6 +17,7 @@ class GameBoard(GridWithWeights):
         self.screen = None
         self.images = None
         self.station = None
+        self.basket = None
         self.point_goal = None
 
     def add_furniture(self, furniture):
@@ -34,6 +35,10 @@ class GameBoard(GridWithWeights):
         """Assign station to the board."""
         self.station = station
 
+    def add_bin(self, basket):
+        """Assign trash can to the board."""
+        self.basket = basket
+
     def assign_agent(self, agent):
         """Assign agent to the board. This is necessary for printing board in console."""
         self.agent = agent
@@ -46,7 +51,7 @@ class GameBoard(GridWithWeights):
 
     def get_points(self):
         """Return all points, at which there are some objects (dirt or furniture)."""
-        return self.obstacles.keys() + [item.position for item in self.dirt]
+        return self.obstacles.keys() + [item.position for item in self.dirt + [self.station, self.basket]]
 
     def get_furniture_points(self):
         """Return sorted list of furniture positions.
@@ -126,7 +131,7 @@ class GameBoard(GridWithWeights):
         for dirt in self.dirt:
             self.screen.blit(self.images[dirt.name], dirt.screen_position())
 
-        for furniture in self.furniture + [self.station]:
+        for furniture in self.furniture + [self.station, self.basket]:
             self.screen.blit(self.images[furniture.name], furniture.screen_position())
 
         # Draw crossed lines at point goal

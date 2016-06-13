@@ -85,11 +85,21 @@ class Cleaner(Object):
         self.board.point_goal = self.board.station.position
         self.move_to(self.board.station.position, static_board=False)
 
+    def go_to_bin(self):
+        """Move agent from it's current position to the position of the trash can."""
+        self.board.point_goal = self.board.basket.position
+        self.move_to(self.board.basket.position, static_board=False)
+
     def refresh(self):
         """Refill agent's properties."""
         print("\nAGENT RELOADED IN DOCKING STATION.")
         self.battery = 150
         self.soap = 100
+        # self.container = 0
+
+    def empty_container(self):
+        """Leave all dirt in trash can."""
+        print("\nAGENT THREW DIRT TO RUBBISH BIN.")
         self.container = 0
 
     def recognize(self, position=("", )):
@@ -199,7 +209,7 @@ class Cleaner(Object):
             print("\nNO INFORMATION ABOUT DIRT.")
             self.clean_all = False
 
-    def make_decision(self, position, item):
+    def decide_to_clean(self, position, item):
         """Return result of classification using previously created tree (based on training set).
         Each attribute is changed into descriptive form, using fuzzy functions (to match the training set).
         """
@@ -216,22 +226,38 @@ class Cleaner(Object):
               format(*map(str.upper, [distance, instance, soap, battery, container, result])))
         return result
 
+    def decide_to_refill(self):
+        dist_bin = fuzzy_distance(heuristic(self.position, self.board.basket.position))
+        dist_sta = fuzzy_distance(heuristic(self.position, self.board.station.position))
+        soap = fuzzy_soap(self.soap)
+        battery = fuzzy_battery(self.battery)
+        container = fuzzy_container(self.container)
+        result = self.classification.classify_refill(dist_sta, dist_bin, battery, soap, container)
+        print("dist station: {}, dist bin: {}, battery: {}, soap: {}, container: {}, decision: {}".
+              format(*map(str.upper, [dist_sta, dist_bin, battery, soap, container, result])))
+        return result
+
     def decide_and_clean(self):
         """Use decision tree to decide which action the agent should take.
         First iterate through each object and decide if cleaner can clean it in current state (battery level, etc.).
         If there is no object, which can be cleaned then cleaner returns to the station and reloads.
         """
         if self.data:
-            for position, item in sorted(self.data.items()):
-                result = self.make_decision(position, item)
+            for position, item in sorted(self.data.items(), key=lambda x: heuristic(x[0], self.position)):
+                result = self.decide_to_clean(position, item)
                 if result == "True":
                     self.board.point_goal = position
                     self.move_to(position, False, False)
                     self.clean()
                     break
             else:  # if cleaner is not able to clean any object (there was no break statement)
-                self.go_to_station()
-                self.refresh()
+                refill = self.decide_to_refill()
+                if refill == "station":
+                    self.go_to_station()
+                    self.refresh()
+                else:
+                    self.go_to_bin()
+                    self.empty_container()
                 pygame.time.wait(200)
 
         elif not self.board.dirt:  # if agent collected all the information and cleaned all dirt from the board

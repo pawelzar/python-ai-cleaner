@@ -18,7 +18,7 @@ class GameBoard(GridWithWeights):
         self.images = None
         self.station = None
         self.basket = None
-        self.point_goal = None
+        self.point_goal = (0, 0)
 
     def add_furniture(self, furniture):
         """Add object to the board that the agent can not pass through."""

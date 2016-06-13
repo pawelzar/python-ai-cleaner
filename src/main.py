@@ -77,7 +77,6 @@ BOARD.generate_random_dirt(15)
 
 BOARD.assign_agent(AGENT)
 BOARD.print_in_console()
-BOARD.point_goal = (0, 8)
 PLAY = True
 
 # Main loop of the program

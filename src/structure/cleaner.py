@@ -243,6 +243,7 @@ class Cleaner(Object):
         If there is no object, which can be cleaned then cleaner returns to the station and reloads.
         """
         if self.data:
+            # items are sorted by distance from the cleaner
             for position, item in sorted(self.data.items(), key=lambda x: heuristic(x[0], self.position)):
                 result = self.decide_to_clean(position, item)
                 if result == "True":

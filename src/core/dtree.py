@@ -2,14 +2,14 @@ def majority_value(data, target_attr):
     return most_frequent([record[target_attr] for record in data])
 
 
-def most_frequent(lst):
+def most_frequent(data):
     """Return which result is the most common."""
-    return max(unique(lst), key=lambda x: lst.count(x))
+    return max(unique(data), key=lambda x: data.count(x))
 
 
-def unique(lst):
+def unique(data):
     """Return list of unique values for given list."""
-    return list(set(lst))
+    return list(set(data))
 
 
 def get_values(data, attr):
@@ -31,19 +31,19 @@ def choose_attribute(data, attributes, target_attr, fitness):
 
 def get_examples(information, attr, value):
     data = information[:]
-    rtn_lst = []
+    out_list = []
     
     if not data:
-        return rtn_lst
+        return out_list
     else:
         record = data.pop()
         if record[attr] == value:
-            rtn_lst.append(record)
-            rtn_lst.extend(get_examples(data, attr, value))
-            return rtn_lst
+            out_list.append(record)
+            out_list.extend(get_examples(data, attr, value))
+            return out_list
         else:
-            rtn_lst.extend(get_examples(data, attr, value))
-            return rtn_lst
+            out_list.extend(get_examples(data, attr, value))
+            return out_list
 
 
 def get_classification(tree, record):
@@ -51,8 +51,8 @@ def get_classification(tree, record):
         return tree
     else:
         attr = tree.keys()[0]
-        t = tree[attr][record[attr]]
-        return get_classification(t, record)
+        subtree = tree[attr][record[attr]]
+        return get_classification(subtree, record)
 
 
 def create_decision_tree(data, attributes, target_attr, fitness_func):
@@ -65,15 +65,11 @@ def create_decision_tree(data, attributes, target_attr, fitness_func):
         return values[0]
     else:
         best = choose_attribute(data, attributes, target_attr, fitness_func)
-
         tree = {best: {}}
 
         for val in get_values(data, best):
-            subtree = create_decision_tree(
-                get_examples(data, best, val),
-                [attr for attr in attributes if attr != best],
-                target_attr, fitness_func)
-
+            subtree = create_decision_tree(get_examples(data, best, val), filter(lambda x: x != best, attributes),
+                                           target_attr, fitness_func)
             tree[best][val] = subtree
 
     return tree

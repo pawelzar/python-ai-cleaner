@@ -45,7 +45,9 @@ class Cleaner(Object):
         self.obj_images = images
 
     def set_cleaning(self):
-        """Informs agent to clean all objects on board. Changes clean_all flag to True."""
+        """Inform agent to clean all objects on board.
+        Change clean_all flag to True if there is dirt and agent collected data, False otherwise.
+        """
         if self.board.dirt and not self.data:
             print("\nNO INFORMATION ABOUT DIRT, PLEASE LAUNCH RECOGNITION PROCESS.")
         elif not self.board.dirt:
@@ -62,11 +64,11 @@ class Cleaner(Object):
         destination = (self.position[0] + vector[0], self.position[1] + vector[1])
         if self.board.passable(destination) and self.board.in_bounds(destination):
             self.position = destination
-            self.battery -= 0.2
+            self.battery -= 0.5
+            self.print_stats()
 
     def find_closest(self):
         """Find position of dirt, which is closest from current position of the agent.
-
         The distance is "Manhattan distance" (strictly horizontal and/or vertical path).
         """
         closest = WIDTH * HEIGHT  # maximum possible distance on the board
@@ -173,14 +175,14 @@ class Cleaner(Object):
             if self.data[self.position] == "cat":
                 self.battery -= 2
                 self.soap -= 15
-                self.container += 10
+                self.container += 8
             elif self.data[self.position] == "water":
                 self.battery -= 2
-                self.soap -= 4
+                self.soap -= 7
                 self.container += 5
             else:
-                self.battery -= 1.4
-                self.container += 20
+                self.battery -= 3
+                self.container += 7
             del self.data[self.position]
 
     def clean_next(self):
@@ -198,6 +200,9 @@ class Cleaner(Object):
             self.clean_all = False
 
     def make_decision(self, position, item):
+        """Return result of classification using previously created tree (based on training set).
+        Each attribute is changed into descriptive form, using fuzzy functions (to match the training set).
+        """
         instance = item  # name of the object (in this situation type of the dirt)
 
         # gather information in descriptive form using fuzzy functions
@@ -212,7 +217,10 @@ class Cleaner(Object):
         return result
 
     def decide_and_clean(self):
-        """Use decision tree to decide which action the agent should take."""
+        """Use decision tree to decide which action the agent should take.
+        First iterate through each object and decide if cleaner can clean it in current state (battery level, etc.).
+        If there is no object, which can be cleaned then cleaner returns to the station and reloads.
+        """
         if self.data:
             for position, item in sorted(self.data.items()):
                 result = self.make_decision(position, item)
@@ -221,7 +229,7 @@ class Cleaner(Object):
                     self.move_to(position, False, False)
                     self.clean()
                     break
-            else:
+            else:  # if cleaner is not able to clean any object (there was no break statement)
                 self.go_to_station()
                 self.refresh()
                 pygame.time.wait(200)
@@ -237,13 +245,13 @@ class Cleaner(Object):
     def draw(self):
         """Draw agent image on previously assigned screen."""
         if self.clean_all:
-            # self.clean_next()
-            self.decide_and_clean()
-            self.print_stats()
+            # self.clean_next()  # without decision tree
+            self.decide_and_clean()  # use decision tree to decide
+            # self.print_stats()
         self.screen.blit(self.image, self.screen_position())
 
     def generate_and_clean(self, amount):
-        """Generates new random dirt on board and automatically sets agent to clean all."""
+        """Generate new random dirt on board and automatically set agent to clean all."""
         if not self.board.dirt:
             self.board.generate_random_dirt(amount)
             self.board.draw()
@@ -254,4 +262,5 @@ class Cleaner(Object):
         self.set_cleaning()
 
     def print_stats(self):
+        """Print cleaner's current parameters in console."""
         print("battery: {}/150, soap: {}/100, container {}/100".format(self.battery, self.soap, self.container))

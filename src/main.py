@@ -13,7 +13,6 @@ network = NeuralNetwork()
 # Initialize classification (creates decision tree based on training set)
 classification = Classification("train_cleaning", "train_refill")
 classification.draw_cleaning_tree()
-classification.draw_refill_tree()
 
 # Initialize display
 pygame.init()
@@ -129,6 +128,12 @@ while PLAY:
                 AGENT.go_to_station()
 
             if event.key == pygame.K_F4:
+                AGENT.reload()
+
+            if event.key == pygame.K_F5:
+                AGENT.empty_container()
+
+            if event.key == pygame.K_F6:
                 BOARD.generate_random_dirt(20)
 
             if event.key == pygame.K_F9:

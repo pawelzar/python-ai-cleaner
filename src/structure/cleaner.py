@@ -90,17 +90,19 @@ class Cleaner(Object):
         self.board.point_goal = self.board.basket.position
         self.move_to(self.board.basket.position, static_board=False)
 
-    def refresh(self):
-        """Refill agent's properties."""
-        print("\nAGENT RELOADED IN DOCKING STATION.")
-        self.battery = 150
-        self.soap = 100
-        # self.container = 0
+    def reload(self):
+        """Reload agent's properties."""
+        if self.position == self.board.station.position:
+            print("\nAGENT RELOADED IN DOCKING STATION.")
+            self.battery = 150
+            self.soap = 100
+            # self.container = 0
 
     def empty_container(self):
         """Leave all dirt in trash can."""
-        print("\nAGENT THREW DIRT TO RUBBISH BIN.")
-        self.container = 0
+        if self.position == self.board.basket.position:
+            print("\nAGENT THREW DIRT TO RUBBISH BIN.")
+            self.container = 0
 
     def recognize(self, position=("", )):
         """Using assigned neural network, recognize object by image at current position."""
@@ -183,8 +185,8 @@ class Cleaner(Object):
         if self.position in self.data.keys():
             self.board.clean_object(self.position)
             if self.data[self.position] == "cat":
-                self.battery -= 2
-                self.soap -= 15
+                self.battery -= 4
+                self.soap -= 9
                 self.container += 8
             elif self.data[self.position] == "water":
                 self.battery -= 2
@@ -233,7 +235,7 @@ class Cleaner(Object):
         battery = fuzzy_battery(self.battery)
         container = fuzzy_container(self.container)
         result = self.classification.classify_refill(dist_sta, dist_bin, battery, soap, container)
-        print("dist station: {}, dist bin: {}, battery: {}, soap: {}, container: {}, decision: {}".
+        print("distance to station: {}, distance to bin: {}, battery: {}, soap: {}, container: {}, decision: {}".
               format(*map(str.upper, [dist_sta, dist_bin, battery, soap, container, result])))
         return result
 
@@ -255,14 +257,17 @@ class Cleaner(Object):
                 refill = self.decide_to_refill()
                 if refill == "station":
                     self.go_to_station()
-                    self.refresh()
+                    self.reload()
                 else:
                     self.go_to_bin()
                     self.empty_container()
                 pygame.time.wait(200)
 
         elif not self.board.dirt:  # if agent collected all the information and cleaned all dirt from the board
+            self.go_to_bin()
+            self.empty_container()
             self.go_to_station()
+            self.reload()
             print("\nCLEANING COMPLETED.")
             self.clean_all = False
         else:  # there is still some dirt on the board, but the agent didn't collect information about it

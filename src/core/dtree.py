@@ -47,6 +47,7 @@ def get_examples(information, attr, value):
 
 
 def get_classification(tree, record):
+    """Return result for given record and tree, where record is a dictionary of attributes and corresponding values."""
     if isinstance(tree, str):
         return tree
     else:

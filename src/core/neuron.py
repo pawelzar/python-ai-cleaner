@@ -48,11 +48,11 @@ class NeuralNetwork:
                             x.color[1] / 1000.0, x.color[2] / 1000.0), x.output)
 
         trainer = BackpropTrainer(self.net, momentum=0.1, verbose=True, weightdecay=0.01)
-        trainer.trainOnDataset(data, 1000)  # 1000 iterations
+        trainer.trainOnDataset(data, 0)  # 1000 iterations
         trainer.testOnData(verbose=True)
 
     def test_network(self, test):
-        """Return list of values, which is the output of activate function. Parameter is image."""
+        """Return name of recognized object."""
         output = np.around(self.net.activate([test.contours / 100.0, test.color[0] / 1000.0,
                                               test.color[1] / 1000.0, test.color[2] / 1000.0]))
         for key, value in self.encodingDict.items():
@@ -69,16 +69,10 @@ class NeuralTrain:
         self.contours = 0
 
     def prepare_train_data(self):
-        for x in range(self.height):
-            for y in range(self.width):
-                if (self.img[x, y] == self.color).all():
-                    self.img[x, y] = [255, 255, 255]
-                elif (self.img[x, y] != [255, 255, 255]).any():
-                    self.img[x, y] = [0, 0, 0]
-
         gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
-        ret, thresh = cv2.threshold(gray, 127, 255, 1)  # get a bi-level (binary) image out of a gray scale image
-        contours, h = cv2.findContours(thresh, 1, 2)
+        # get a bi-level (binary) image out of a gray scale image
+        ret, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV)
+        contours, h = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
         for cnt in contours:
             approx = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
@@ -93,16 +87,10 @@ class NeuralTest:
         self.contours = 0
 
     def prepare_test_data(self):
-        for x in range(self.height):
-            for y in range(self.width):
-                if (self.img[x, y] == self.color).all():
-                    self.img[x, y] = [0, 0, 0]
-                else:
-                    self.img[x, y] = [255, 255, 255]
-
         gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
-        ret, thresh = cv2.threshold(gray, 127, 255, 1)  # get a bi-level (binary) image out of a gray scale image
-        contours, h = cv2.findContours(thresh, 1, 2)
+        # get a bi-level (binary) image out of a gray scale image
+        ret, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV)
+        contours, h = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
         for cnt in contours:
             approx = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)

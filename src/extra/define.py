@@ -4,6 +4,7 @@ from src.extra.draw import draw_tree
 
 
 def create_cleaning_set():
+    """Create file with every possible combination of values (for cleaning classification)."""
     train_set = open("../train", "w")
     train_set.write("DISTANCE    TYPE    SOAP    BATTERY    CONTAINER    CLEAN" + "\n")
 
@@ -27,6 +28,7 @@ def create_cleaning_set():
 
 
 def create_refill_set():
+    """Create file with every possible combination of values (for refill classification)."""
     train_set = open("../train_refill", "w")
     train_set.write("DIST_STA    DIST_BIN    BATTERY    SOAP    CONTAINER    DECISION" + "\n")
 
@@ -52,6 +54,7 @@ def create_refill_set():
 
 
 def shuffle_set():
+    """Create minimum set of data needed to create proper decision tree."""
     defined = open("../train_refill", "r")
     lines = defined.readlines()
     defined.close()
@@ -71,8 +74,10 @@ def shuffle_set():
         if cleaning_tree == create_decision_tree(temp, attributes, target_attr, gain):
             new_cleaning_set = new_cleaning_set[1:i] + new_cleaning_set[i+1:]
         i += 1
+
     draw_tree(create_decision_tree(new_cleaning_set, attributes, target_attr, gain))
-    train_set = open("../train_test2", "w")
+    train_set = open("../train_test", "w")
+
     for i in new_cleaning_set:
         line = ""
         print list(i.items())
@@ -81,7 +86,8 @@ def shuffle_set():
                 val[4].ljust(12, " ") +
                 val[1].ljust(11, " ") +
                 val[5].ljust(8, " ") +
-                val[0].ljust(13, " ") + val[2])
+                val[0].ljust(13, " ") +
+                val[2])
         train_set.write(line + "\n")
     train_set.close()
 

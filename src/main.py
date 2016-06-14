@@ -6,6 +6,7 @@ from src.extra.settings import *
 from src.structure.cleaner import Cleaner
 from src.structure.gameboard import GameBoard
 from src.structure.object import Object
+from src.genetic.optimize import optimize_route
 
 # Initialize neural network
 network = NeuralNetwork()
@@ -13,6 +14,7 @@ network = NeuralNetwork()
 # Initialize classification (creates decision tree based on training set)
 classification = Classification("train_cleaning", "train_refill")
 classification.draw_cleaning_tree()
+classification.draw_refill_tree()
 
 # Initialize display
 pygame.init()
@@ -78,6 +80,8 @@ BOARD.assign_agent(AGENT)
 BOARD.print_in_console()
 PLAY = True
 
+route = optimize_route(BOARD.get_dirt_points(), GENERATIONS, CROSSOVER_CHANCE, MUTATION_CHANCE, POPULATION)
+print route
 # Main loop of the program
 while PLAY:
     for event in pygame.event.get():

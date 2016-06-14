@@ -25,3 +25,18 @@ CELL_MARGIN = 1
 
 # Set width and height of the screen (in pixels)
 SCREEN_SIZE = [CELL_WIDTH * WIDTH, CELL_HEIGHT * HEIGHT]
+
+
+# SETTINGS FOR GENETIC ALGORITHMS
+
+# The number of routes in each generation
+POPULATION = 5
+
+# Number of generations
+GENERATIONS = 1000
+
+# The change a crossover happens for every 2 routes that go from the old generation to the next
+CROSSOVER_CHANCE = 0.7
+
+# The change of a mutation for each route that goes from the old generation to the next
+MUTATION_CHANCE = 0.5

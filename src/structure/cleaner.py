@@ -144,8 +144,7 @@ class Cleaner(Object):
         - static_board - draw agent on new position, but leave previous positions on screen
         - draw - print current game board with path in console
         """
-        came_from, cost_so_far = a_star_search(self.board, self.position, point_goal, 'up')
-        reconstruction = reconstruct_path(came_from, start=self.position, goal=point_goal)
+        reconstruction = a_star_search(self.board, self.position, point_goal, 'up')
 
         if draw:
             print("\nPATH FROM POINT {} to {}".format(self.position, point_goal))
@@ -214,6 +213,7 @@ class Cleaner(Object):
     def decide_to_clean(self, position, item):
         """Return result of classification using previously created tree (based on training set).
         Each attribute is changed into descriptive form, using fuzzy functions (to match the training set).
+        The result is either True or False (to clean or not to clean).
         """
         instance = item  # name of the object (in this situation type of the dirt)
 
@@ -229,6 +229,9 @@ class Cleaner(Object):
         return result
 
     def decide_to_refill(self):
+        """Return result of classification for moving cleaner to station or trash can.
+        The result is either 'station' or 'bin'. This indicates where the cleaner should move.
+        """
         dist_bin = fuzzy_distance(heuristic(self.position, self.board.basket.position))
         dist_sta = fuzzy_distance(heuristic(self.position, self.board.station.position))
         soap = fuzzy_soap(self.soap)

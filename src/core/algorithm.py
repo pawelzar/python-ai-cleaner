@@ -1,3 +1,4 @@
+import math
 from src.structure.pqueue import PriorityQueue
 
 
@@ -6,6 +7,10 @@ def heuristic(a, b):
     (x1, y1) = a
     (x2, y2) = b
     return abs(x1 - x2) + abs(y1 - y2)
+
+
+def euclidean(a, b):
+    return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
 
 
 def count_cost(start, goal, state):
@@ -67,8 +72,8 @@ def count_cost(start, goal, state):
     return new_state, cost
 
 
-def a_star_search(graph, start, goal, state):
-    """Return list of points and list of costs created by A* algorithm."""
+def a_star_search(graph, start, goal, state='up'):
+    """Return list of points, which is the path created by A* algorithm."""
     frontier = PriorityQueue()
     frontier.put(start, 0)
     came_from = {start: None}
@@ -80,16 +85,16 @@ def a_star_search(graph, start, goal, state):
         if current == goal:
             break
 
-        for next in graph.neighbors(current):
-            state, rotate_cost = count_cost(current, next, state)
-            new_cost = cost_so_far[current] + graph.cost(current, next) + abs(rotate_cost)
-            if next not in cost_so_far or new_cost < cost_so_far[next]:
-                cost_so_far[next] = new_cost
-                priority = new_cost + heuristic(goal, next)
-                frontier.put(next, priority)
-                came_from[next] = current
+        for position in graph.neighbors(current):
+            state, rotate_cost = count_cost(current, position, state)
+            new_cost = cost_so_far[current] + graph.cost(current, position) + abs(rotate_cost)
+            if position not in cost_so_far or new_cost < cost_so_far[position]:
+                cost_so_far[position] = new_cost
+                priority = new_cost + heuristic(goal, position)
+                frontier.put(position, priority)
+                came_from[position] = current
 
-    return came_from, cost_so_far
+    return reconstruct_path(came_from, start, goal)
 
 
 def reconstruct_path(came_from, start, goal):

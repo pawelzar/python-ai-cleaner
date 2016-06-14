@@ -48,7 +48,7 @@ class NeuralNetwork:
                             x.color[1] / 1000.0, x.color[2] / 1000.0), x.output)
 
         trainer = BackpropTrainer(self.net, momentum=0.1, verbose=True, weightdecay=0.01)
-        trainer.trainOnDataset(data, 0)  # 1000 iterations
+        trainer.trainOnDataset(data, 1000)  # 1000 iterations
         trainer.testOnData(verbose=True)
 
     def test_network(self, test):

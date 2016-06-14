@@ -5,8 +5,9 @@ from object import Object
 from src.core.algorithm import a_star_search, heuristic, reconstruct_path, path_as_orders
 from src.core.neuron import NeuralTest
 from src.extra.draw import draw_grid
-from src.extra.settings import WIDTH, HEIGHT
+from src.extra.settings import *
 from src.extra.fuzzy import *
+from src.genetic.optimize import optimize_route
 
 
 class Cleaner(Object):
@@ -23,6 +24,7 @@ class Cleaner(Object):
         self.network = None
         self.classification = None
         self.clean_all = False
+        self.optimal_path = []
 
     def assign_board(self, board):
         """Assign the board, on which the agent will be doing tasks (move, clean etc.)."""
@@ -249,12 +251,15 @@ class Cleaner(Object):
         """
         if self.data:
             # items are sorted by distance from the cleaner
-            for position, item in sorted(self.data.items(), key=lambda x: heuristic(x[0], self.position)):
+            # for position, item in sorted(self.data.items(), key=lambda x: heuristic(x[0], self.position)):
+            for position in self.optimal_path:
+                item = self.data[position]
                 result = self.decide_to_clean(position, item)
                 if result == "True":
                     self.board.point_goal = position
                     self.move_to(position, False, False)
                     self.clean()
+                    self.optimal_path.remove(position)
                     break
             else:  # if cleaner is not able to clean any object (there was no break statement)
                 refill = self.decide_to_refill()
@@ -294,8 +299,12 @@ class Cleaner(Object):
             pygame.display.update()
             # agent.set_position((0, 0))
         self.collect_data()
+        self.optimize_path()
         self.set_cleaning()
 
     def print_stats(self):
         """Print cleaner's current parameters in console."""
         print("battery: {}/150, soap: {}/100, container {}/100".format(self.battery, self.soap, self.container))
+
+    def optimize_path(self):
+        self.optimal_path = optimize_route(self.data.keys(), GENERATIONS, CROSSOVER_CHANCE, MUTATION_CHANCE, POPULATION)

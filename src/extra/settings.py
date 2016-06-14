@@ -30,7 +30,7 @@ SCREEN_SIZE = [CELL_WIDTH * WIDTH, CELL_HEIGHT * HEIGHT]
 # SETTINGS FOR GENETIC ALGORITHMS
 
 # The number of routes in each generation
-POPULATION = 5
+POPULATION = 10
 
 # Number of generations
 GENERATIONS = 1000

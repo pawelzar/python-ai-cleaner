@@ -42,7 +42,8 @@ def create_refill_set():
                                            (dist_station == "medium" or dist_station == "far") and
                                            container == "full") \
                             else "station"'''
-                        result = "bin" if container == "full" else "station"
+                        # result = "bin" if container == "full" else "station"
+                        result = "station" if ((dist_station == "close" or dist_station == "medium") and soap == "low") or battery == "low" else "bin"
                         line = (dist_station.ljust(12, " ") +
                                 dist_bin.ljust(12, " ") +
                                 battery.ljust(11, " ") +

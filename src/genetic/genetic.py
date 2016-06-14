@@ -3,8 +3,8 @@ import random
 
 class GeneticAlgorithm:
     def __init__(self, solution_generator, crossover_chance, mutation_chance, population):
-        self.crossoverChance = crossover_chance
-        self.mutationChance = mutation_chance
+        self.crossover_chance = crossover_chance
+        self.mutation_chance = mutation_chance
         self.population = population
         self.generation = self.create_initial_population(solution_generator)
 
@@ -32,7 +32,7 @@ class GeneticAlgorithm:
             index += 1
 
         return self.generation[index - 1]
-    
+
     def evolve(self):
         """Selects solutions from the current generation using
         select() and uses them to create a new generation. Some of the
@@ -45,16 +45,16 @@ class GeneticAlgorithm:
 
         new_generation = []
         while len(new_generation) < len(self.generation):
-            # Select two parents.
+            # Select two parents
             parents = [self.select(all_fitness).copy(), self.select(all_fitness).copy()]
 
             # Randomly run them through crossover()
-            if random.random() <= self.crossoverChance:
+            if random.random() <= self.crossover_chance:
                 parents[0].crossover(parents[1])
 
             # Randomly run them through mutate()
             for parent in parents:
-                if random.random() <= self.mutationChance:
+                if random.random() <= self.mutation_chance:
                     parent.mutate()
 
             # Add them to the new batch of routes.

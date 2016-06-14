@@ -1,16 +1,4 @@
-# Define some colors
-BLACK = (0, 0, 0)
-DARK = (40, 40, 40)
-GREY = (80, 80, 80)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-
-# Directions for moving ((0, 0) in top left corner)
-UP = (0, -1)
-DOWN = (0, 1)
-LEFT = (-1, 0)
-RIGHT = (1, 0)
+# SCREEN SETTINGS
 
 # Set number of rows (HEIGHT) and columns (WIDTH) in the grid
 WIDTH = 20
@@ -26,14 +14,36 @@ CELL_MARGIN = 1
 # Set width and height of the screen (in pixels)
 SCREEN_SIZE = [CELL_WIDTH * WIDTH, CELL_HEIGHT * HEIGHT]
 
+# Define some colors
+BLACK = (0, 0, 0)
+DARK = (40, 40, 40)
+GREY = (80, 80, 80)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
 
-# SETTINGS FOR GENETIC ALGORITHMS
+
+# PLAYER SETTINGS
+
+# Directions for moving ((0, 0) in top left corner)
+UP = (0, -1)
+DOWN = (0, 1)
+LEFT = (-1, 0)
+RIGHT = (1, 0)
+
+# Cleaner's properties
+MAX_BATTERY = 150
+MAX_SOAP = 100
+MAX_CAPACITY = 100
+
+
+# SETTINGS FOR GENETIC ALGORITHM
 
 # The number of routes in each generation
 POPULATION = 10
 
 # Number of generations
-GENERATIONS = 1000
+GENERATIONS = 2000
 
 # The change a crossover happens for every 2 routes that go from the old generation to the next
 CROSSOVER_CHANCE = 0.7

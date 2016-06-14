@@ -80,7 +80,8 @@ BOARD.assign_agent(AGENT)
 BOARD.print_in_console()
 PLAY = True
 
-route = optimize_route(BOARD.get_dirt_points(), GENERATIONS, CROSSOVER_CHANCE, MUTATION_CHANCE, POPULATION)
+# optimize_route(BOARD.get_dirt_points(), GENERATIONS, CROSSOVER_CHANCE, MUTATION_CHANCE, POPULATION)
+
 # Main loop of the program
 while PLAY:
     for event in pygame.event.get():
@@ -137,7 +138,7 @@ while PLAY:
                 AGENT.empty_container()
 
             if event.key == pygame.K_F6:
-                BOARD.generate_random_dirt(12)
+                BOARD.generate_random_dirt(20)
 
             if event.key == pygame.K_F9:
                 AGENT.clean()
@@ -151,7 +152,7 @@ while PLAY:
 
             # Fill board randomly and immediately activate cleaning
             if event.key == pygame.K_F12:
-                AGENT.generate_and_clean(12)
+                AGENT.generate_and_clean(20)
 
     BOARD.draw()
     AGENT.draw()

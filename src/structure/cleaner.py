@@ -2,7 +2,7 @@ import cv2
 import pygame
 
 from object import Object
-from src.core.algorithm import a_star_search, heuristic, reconstruct_path, path_as_orders
+from src.core.algorithm import a_star_search, heuristic, path_as_orders
 from src.core.neuron import NeuralTest
 from src.extra.draw import draw_grid
 from src.extra.settings import *
@@ -14,8 +14,8 @@ class Cleaner(Object):
     def __init__(self, name, position, texture):
         super(Cleaner, self).__init__(name, position)
         self.image = pygame.image.load(texture).convert_alpha()
-        self.battery = 150
-        self.soap = 100
+        self.battery = MAX_BATTERY
+        self.soap = MAX_SOAP
         self.container = 0
         self.data = dict()
         self.obj_images = dict()  # paths of images (for neural network)
@@ -24,7 +24,7 @@ class Cleaner(Object):
         self.network = None
         self.classification = None
         self.clean_all = False
-        self.optimal_path = []
+        self.optimal_path = []  # needed only if genetic algorithm is used
 
     def assign_board(self, board):
         """Assign the board, on which the agent will be doing tasks (move, clean etc.)."""
@@ -96,8 +96,8 @@ class Cleaner(Object):
         """Reload agent's properties."""
         if self.position == self.board.station.position:
             print("\nAGENT RELOADED IN DOCKING STATION.")
-            self.battery = 150
-            self.soap = 100
+            self.battery = MAX_BATTERY
+            self.soap = MAX_SOAP
             # self.container = 0
 
     def empty_container(self):
@@ -251,15 +251,15 @@ class Cleaner(Object):
         """
         if self.data:
             # items are sorted by distance from the cleaner
-            # for position, item in sorted(self.data.items(), key=lambda x: heuristic(x[0], self.position)):
-            for position in self.optimal_path:
-                item = self.data[position]
+            # for position in self.optimal_path:
+            for position, item in sorted(self.data.items(), key=lambda x: heuristic(x[0], self.position)):
+                # item = self.data[position]  # use if iterate through optimal path
                 result = self.decide_to_clean(position, item)
                 if result == "True":
                     self.board.point_goal = position
                     self.move_to(position, False, False)
                     self.clean()
-                    self.optimal_path.remove(position)
+                    # self.optimal_path.remove(position)  # use if iterate through optimal path
                     break
             else:  # if cleaner is not able to clean any object (there was no break statement)
                 refill = self.decide_to_refill()
@@ -299,7 +299,7 @@ class Cleaner(Object):
             pygame.display.update()
             # agent.set_position((0, 0))
         self.collect_data()
-        self.optimize_path()
+        # self.optimize_path()
         self.set_cleaning()
 
     def print_stats(self):
@@ -307,4 +307,5 @@ class Cleaner(Object):
         print("battery: {}/150, soap: {}/100, container {}/100".format(self.battery, self.soap, self.container))
 
     def optimize_path(self):
+        """Generate optimal path for clearing all dirt on the board."""
         self.optimal_path = optimize_route(self.data.keys(), GENERATIONS, CROSSOVER_CHANCE, MUTATION_CHANCE, POPULATION)

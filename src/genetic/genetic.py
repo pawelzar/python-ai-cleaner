@@ -9,11 +9,12 @@ class GeneticAlgorithm:
         self.generation = self.create_initial_population(solution_generator)
 
     def create_initial_population(self, solution_generator):
+        """Generate as many routes as the number of population."""
         solutions = [solution_generator.generate() for i in range(self.population)]
-        # print solutions
         return solutions
 
     def get_solutions(self):
+        """Return list of routes. Number of routes is the number of population."""
         return self.generation
 
     def get_best_solution(self):
@@ -34,9 +35,9 @@ class GeneticAlgorithm:
         return self.generation[index - 1]
 
     def evolve(self):
-        """Selects solutions from the current generation using
-        select() and uses them to create a new generation. Some of the
-        solutions have a crossover or mutation performed on them."""
+        """Create new generation based on previous one.
+        Some of the solutions have a crossover or mutation performed on them.
+        """
 
         # Fitness calculation
         all_fitness = [solution.get_fitness() for solution in self.generation]

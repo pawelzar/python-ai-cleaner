@@ -1,6 +1,5 @@
-import math
 import random
-from src.core.algorithm import euclidean
+from src.core.algorithm import euclidean, heuristic
 
 
 class Route:
@@ -9,10 +8,8 @@ class Route:
 
     @staticmethod
     def distance(obj_1, obj_2):
-        """Calculate the distance between two objects. (Euclidean distance)"""
-        # return heuristic(city1, city2)
-        # return len(a_star_search(grid, city1, city2))
-        # return math.hypot(city2[0] - city1[0], city2[1] - city1[1])
+        """Calculate the distance between two objects."""
+        # return heuristic(obj_1, obj_2)
         return euclidean(obj_1, obj_2)
 
     def get_length(self):
@@ -24,6 +21,7 @@ class Route:
         return 1 / self.get_length()
 
     def crossover(self, route):
+        """Copy selected part from one parent to another (given as route) in the same place."""
         x1 = len(self.objects) / 3
         x2 = x1 * 2
         part = self.objects[x1:x2]
@@ -41,7 +39,7 @@ class Route:
                 temp.append(route.objects[i])
             i += 1
 
-        route = temp
+        route.objects = temp
 
     def mutate(self):
         """Swap two objects."""

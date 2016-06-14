@@ -5,35 +5,27 @@ from src.extra.draw import draw_tree as draw
 
 class Classification:
     def __init__(self, train_cleaning, train_refill):
-        defined = open(train_cleaning, "r")
+        self.tree = self.create_tree(train_cleaning)
+        self.tree_refill = self.create_tree(train_refill)
+
+    def create_tree(self, training_set):
+        """Load file with training set and create decision tree based on acquired data."""
+        defined = open(training_set, "r")
         lines = defined.readlines()
         defined.close()
 
         attributes = lines.pop(0).split()  # first row represents the naming of values
         target_attr = attributes[-1]  # last column of training set represents the result
-        values = [line.split() for line in lines]
+        values = [line.split() for line in lines]  # all examples from the training set
 
         # create list of dictionaries (each dictionary consists of names of attributes and corresponding values)
         # e.g. {"DISTANCE": "close", "TYPE": "dust", "SOAP: "low", ...}
         data = [dict(zip(attributes, current)) for current in values]
 
-        self.tree = create_decision_tree(data, attributes, target_attr, gain)
+        return create_decision_tree(data, attributes, target_attr, gain)
 
-        defined = open(train_refill, "r")
-        lines = defined.readlines()
-        defined.close()
-
-        attributes = lines.pop(0).split()  # first row represents the naming of values
-        target_attr = attributes[-1]  # last column of training set represents the result
-        values = [line.split() for line in lines]
-
-        # create list of dictionaries (each dictionary consists of names of attributes and corresponding values)
-        # e.g. {"DISTANCE": "close", "TYPE": "dust", "SOAP: "low", ...}
-        data = [dict(zip(attributes, current)) for current in values]
-
-        self.tree_refill = create_decision_tree(data, attributes, target_attr, gain)
-
-    def classify(self, distance, instance, soap, battery, container,):
+    def classify(self, distance, instance, soap, battery, container):
+        """Return decision to clean the object or not."""
         collection = dict()
         collection["DISTANCE"] = distance
         collection["TYPE"] = instance
@@ -43,6 +35,7 @@ class Classification:
         return get_classification(self.tree, collection)
 
     def classify_refill(self, dist_sta, dist_bin, battery, soap, container):
+        """Return decision where the agent should go (e.g. if battery is low or container is empty)."""
         collection = dict()
         collection["DIST_STA"] = dist_sta
         collection["DIST_BIN"] = dist_bin
@@ -52,7 +45,9 @@ class Classification:
         return get_classification(self.tree_refill, collection)
 
     def draw_cleaning_tree(self):
+        print("\nDECISION TREE (CLEANING)")
         draw(self.tree)
 
     def draw_refill_tree(self):
+        print("\nDECISION TREE (REFILL)")
         draw(self.tree_refill)

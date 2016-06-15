@@ -1,1 +1,7 @@
-[Python] Sztuczna Inteligencja - Inteligentny Odkurzacz 
+# Intelligent Cleaner
+
+Applied algorithms:
+
+- Genetic algorithm - to find optimal path
+- Decision tree - to check if cleaner is able to clean dirt
+- Neural network - to recognize dirt by image

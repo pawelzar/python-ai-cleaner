@@ -47,7 +47,8 @@ def get_examples(information, attr, value):
 
 
 def get_classification(tree, record):
-    """Return result for given record and tree, where record is a dictionary of attributes and corresponding values."""
+    """Return result for given record and tree, where record is a
+    dictionary of attributes and corresponding values."""
     if isinstance(tree, str):
         return tree
     else:
@@ -69,8 +70,10 @@ def create_decision_tree(data, attributes, target_attr, fitness_func):
         tree = {best: {}}
 
         for val in get_values(data, best):
-            subtree = create_decision_tree(get_examples(data, best, val), filter(lambda x: x != best, attributes),
-                                           target_attr, fitness_func)
+            subtree = create_decision_tree(
+                get_examples(data, best, val),
+                filter(lambda x: x != best, attributes),
+                target_attr, fitness_func)
             tree[best][val] = subtree
 
     return tree

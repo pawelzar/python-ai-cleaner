@@ -8,17 +8,20 @@ class Classification:
         self.tree = self.create_tree(train_cleaning)
         self.tree_refill = self.create_tree(train_refill)
 
+    @staticmethod
     def create_tree(self, training_set):
-        """Load file with training set and create decision tree based on acquired data."""
+        """Load file with training set and create decision tree
+        based on acquired data."""
         defined = open(training_set, "r")
         lines = defined.readlines()
         defined.close()
 
-        attributes = lines.pop(0).split()  # first row represents the naming of values
-        target_attr = attributes[-1]  # last column of training set represents the result
-        values = [line.split() for line in lines]  # all examples from the training set
+        attributes = lines.pop(0).split()  # first row is the naming of values
+        target_attr = attributes[-1]  # last column of is the result
+        values = [line.split() for line in lines]  # all examples from the set
 
-        # create list of dictionaries (each dictionary consists of names of attributes and corresponding values)
+        # create list of dictionaries
+        # (each dictionary consists of names of attributes and proper values)
         # e.g. {"DISTANCE": "close", "TYPE": "dust", "SOAP: "low", ...}
         data = [dict(zip(attributes, current)) for current in values]
 
@@ -35,7 +38,8 @@ class Classification:
         return get_classification(self.tree, collection)
 
     def classify_refill(self, dist_sta, dist_bin, battery, soap, container):
-        """Return decision where the agent should go (e.g. if battery is low or container is empty)."""
+        """Return decision where the agent should go
+        (e.g. if battery is low or container is empty)."""
         collection = dict()
         collection["DIST_STA"] = dist_sta
         collection["DIST_BIN"] = dist_bin

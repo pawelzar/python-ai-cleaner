@@ -3,13 +3,15 @@ from src.structure.pqueue import PriorityQueue
 
 
 def heuristic(a, b):
-    """Return absolute distance from point a to b. Strictly horizontal and/or vertical path."""
+    """Return absolute distance from point a to b.
+    Strictly horizontal and/or vertical path."""
     (x1, y1) = a
     (x2, y2) = b
     return abs(x1 - x2) + abs(y1 - y2)
 
 
 def euclidean(a, b):
+    """Return Euclidean distance from point a to point b."""
     return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
 
 
@@ -87,7 +89,8 @@ def a_star_search(graph, start, goal, state='up'):
 
         for position in graph.neighbors(current):
             state, rotate_cost = count_cost(current, position, state)
-            new_cost = cost_so_far[current] + graph.cost(current, position) + abs(rotate_cost)
+            new_cost = cost_so_far[current] + \
+                graph.cost(current, position) + abs(rotate_cost)
             if position not in cost_so_far or new_cost < cost_so_far[position]:
                 cost_so_far[position] = new_cost
                 priority = new_cost + heuristic(goal, position)
@@ -98,7 +101,8 @@ def a_star_search(graph, start, goal, state='up'):
 
 
 def reconstruct_path(came_from, start, goal):
-    """Return list of points that represents the path created by A* algorithm."""
+    """Return list of points that represents
+    the path created by A* algorithm."""
     current = goal
     path = [current]
     while current != start:

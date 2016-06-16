@@ -38,7 +38,8 @@ img_path = {
 }
 
 # Load every image, use transparency for png images
-images = {name: pygame.image.load(path).convert_alpha() for name, path in img_path.items()}
+images = {name: pygame.image.load(path).convert_alpha()
+          for name, path in img_path.items()}
 
 # Load special images (with rotation, scaled)
 images["chair_left"] = pygame.transform.rotate(
@@ -73,14 +74,12 @@ AGENT.assign_network(network)
 AGENT.assign_classification(classification)
 AGENT.assign_images(img_path)
 
-# Add objects of type dirt at random positions (number of objects as parameter)
+# Add dirt objects at random positions (number of objects as parameter)
 BOARD.generate_random_dirt(15)
 
 BOARD.assign_agent(AGENT)
 BOARD.print_in_console()
 PLAY = True
-
-# optimize_route(BOARD.get_dirt_points(), GENERATIONS, CROSSOVER_CHANCE, MUTATION_CHANCE, POPULATION)
 
 # Main loop of the program
 while PLAY:

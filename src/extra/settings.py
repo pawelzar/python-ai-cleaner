@@ -45,8 +45,8 @@ POPULATION = 10
 # Number of generations
 GENERATIONS = 2000
 
-# The change a crossover happens for every 2 routes that go from the old generation to the next
+# Chance for two parents to crossover
 CROSSOVER_CHANCE = 0.7
 
-# The change of a mutation for each route that goes from the old generation to the next
+# Chance for mutation (which is swapping random elements)
 MUTATION_CHANCE = 0.5

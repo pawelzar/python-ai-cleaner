@@ -18,11 +18,13 @@ class Object(object):
         return self.position[1]
 
     def get_width(self):
-        """Return number of cells occupied horizontally by the object on the board."""
+        """Return number of cells occupied horizontally
+        by the object on the board."""
         return self.size[0] // CELL_WIDTH
 
     def get_height(self):
-        """Return number of cells occupied vertically by the object on the board."""
+        """Return number of cells occupied vertically
+        by the object on the board."""
         return self.size[1] // CELL_HEIGHT
 
     # @property

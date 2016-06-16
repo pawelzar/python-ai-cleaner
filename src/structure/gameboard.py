@@ -25,7 +25,8 @@ class GameBoard(GridWithWeights):
         self.furniture.append(furniture)
         for row in range(furniture.get_width()):
             for column in range(furniture.get_height()):
-                self.add_obstacle((furniture.pos_x() + row, furniture.pos_y() + column))
+                self.add_obstacle((furniture.pos_x() + row,
+                                   furniture.pos_y() + column))
 
     def add_dirt(self, dirt):
         """Add dirt object to the board."""
@@ -40,7 +41,8 @@ class GameBoard(GridWithWeights):
         self.basket = basket
 
     def assign_agent(self, agent):
-        """Assign agent to the board. This is necessary for printing board in console."""
+        """Assign agent to the board.
+        This is necessary for printing board in console."""
         self.agent = agent
 
     def get_object_name(self, position):
@@ -50,13 +52,16 @@ class GameBoard(GridWithWeights):
                 return item.name
 
     def get_points(self):
-        """Return all points, at which there are some objects (dirt or furniture)."""
-        return self.obstacles.keys() + [item.position for item in self.dirt + [self.station, self.basket]]
+        """Return all points, at which there are some objects
+        (dirt or furniture)."""
+        return self.obstacles.keys() + [item.position for item in self.dirt +
+                                        [self.station, self.basket]]
 
     def get_furniture_points(self):
         """Return sorted list of furniture positions.
 
-        The dictionary of obstacles represents positions that are locked and agent cannot move through them.
+        The dictionary of obstacles represents positions that are
+        locked and agent cannot move through them.
         Thus it represents positions of the furniture on the board.
         """
         return sorted(self.obstacles.keys())
@@ -66,7 +71,8 @@ class GameBoard(GridWithWeights):
         return [item.position for item in self.dirt]
 
     def assign_screen(self, screen):
-        """Assign the screen, on which the elements of the board are going to be displayed."""
+        """Assign the screen, on which the elements of the board
+        are going to be displayed."""
         self.screen = screen
 
     def assign_images(self, images):
@@ -89,28 +95,32 @@ class GameBoard(GridWithWeights):
         self.dirt = []
 
     def generate_random(self, name, character, weight, amount):
-        """Add as many objects of type dirt to the board as the amount specified.
+        """Add objects of type dirt to the board.
 
         Each position is generated randomly and is unique.
         Position values are limited by the size of the board.
 
         Parameters:
         - name - all objects generated here will have this name
-        - character - all objects generated here be represented by this character (e.g. when printing board in console)
-        - weight - this will have influence on creating path by an algorithm (A*)
+        - character - all objects generated here will be represented by this
+                      character (e.g. when printing board in console)
+        - weight - this will influence on creating path by an algorithm (A*)
         - amount - number of objects to be generated
         """
         for i in range(amount):
-            (x, y) = (randrange(0, self.width, 1), randrange(0, self.height, 1))
+            (x, y) = (randrange(0, self.width, 1),
+                      randrange(0, self.height, 1))
             while (x, y) in self.get_points():
-                (x, y) = (randrange(0, self.width, 1), randrange(0, self.height, 1))
+                (x, y) = (randrange(0, self.width, 1),
+                          randrange(0, self.height, 1))
 
             self.add_object((x, y), character)
             self.add_weight((x, y), weight)
             self.add_dirt(Object(name, (x, y)))
 
     def generate_random_dirt(self, amount):
-        """Fill board with dirt placed on random positions. Also assign proper weights and signs."""
+        """Fill board with dirt placed on random positions.
+        Also assign proper weights and signs."""
         self.clean_all_dirt()
         self.generate_random("dust", "1", 20, amount)
         self.generate_random("water", "2", 5, amount)
@@ -125,24 +135,32 @@ class GameBoard(GridWithWeights):
         for row in range(HEIGHT):
             for column in range(WIDTH):
                 self.screen.blit(self.images["floor"],
-                                 [column * CELL_WIDTH + (CELL_MARGIN / 2), row * CELL_HEIGHT + (CELL_MARGIN / 2)])
+                                 [column * CELL_WIDTH + (CELL_MARGIN / 2),
+                                  row * CELL_HEIGHT + (CELL_MARGIN / 2)])
 
         # Draw board elements
         for dirt in self.dirt:
             self.screen.blit(self.images[dirt.name], dirt.screen_position())
 
         for furniture in self.furniture + [self.station, self.basket]:
-            self.screen.blit(self.images[furniture.name], furniture.screen_position())
+            self.screen.blit(self.images[furniture.name],
+                             furniture.screen_position())
 
         # Draw crossed lines at point goal
-        self.draw_target(self.point_goal)
+        self.draw_target()
 
-    def draw_target(self, point_goal):
+    def draw_target(self):
         """Draw crossed lines at the target point on screen."""
-        pygame.draw.line(self.screen, GREY, ((point_goal[0] + 0.5) * CELL_WIDTH - 1, point_goal[1] * CELL_HEIGHT),
-                         ((point_goal[0] + 0.5) * CELL_WIDTH - 1, (point_goal[1] + 1) * CELL_HEIGHT - 1), 4)
-        pygame.draw.line(self.screen, GREY, (point_goal[0] * CELL_WIDTH, (point_goal[1] + 0.5) * CELL_HEIGHT - 1),
-                         ((point_goal[0] + 1) * CELL_WIDTH - 1, (point_goal[1] + 0.5) * CELL_HEIGHT - 1), 4)
+        pygame.draw.line(self.screen, GREY,
+                         ((self.point_goal[0] + 0.5) * CELL_WIDTH - 1,
+                          self.point_goal[1] * CELL_HEIGHT),
+                         ((self.point_goal[0] + 0.5) * CELL_WIDTH - 1,
+                          (self.point_goal[1] + 1) * CELL_HEIGHT - 1), 4)
+        pygame.draw.line(self.screen, GREY,
+                         (self.point_goal[0] * CELL_WIDTH,
+                          (self.point_goal[1] + 0.5) * CELL_HEIGHT - 1),
+                         ((self.point_goal[0] + 1) * CELL_WIDTH - 1,
+                          (self.point_goal[1] + 0.5) * CELL_HEIGHT - 1), 4)
 
     def print_in_console(self):
         """Print nice looking grid in console."""

@@ -3,7 +3,7 @@ import pygame
 
 from object import Object
 from src.core.algorithm import a_star_search, heuristic, path_as_orders
-from src.core.neuron import NeuralTest
+from src.core.neuron import Neuron
 from src.extra.draw import draw_grid
 from src.extra.settings import *
 from src.extra.fuzzy import *
@@ -115,8 +115,8 @@ class Cleaner(Object):
         image = self.obj_images.get(self.board.get_object_name(position), "")
 
         if image:
-            test = NeuralTest(cv2.imread(image))
-            test.prepare_test_data()
+            test = Neuron(cv2.imread(image))
+            test.prepare()
             recognition = self.network.test_network(test)
             print("{} is {}".format(position, recognition))
 

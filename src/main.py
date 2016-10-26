@@ -1,12 +1,16 @@
+import sys, os
+sys.path.append(os.path.abspath(".."))
+
 import pygame
 
 from src.core.classification import Classification
 from src.core.neuron import NeuralNetwork
 from src.extra.settings import *
-from src.structure.cleaner import Cleaner
-from src.structure.gameboard import GameBoard
-from src.structure.object import Object
+from src.model.cleaner import Cleaner
+from src.model.gameboard import GameBoard
+from src.model.object import Object
 from src.genetic.optimize import optimize_route
+
 
 # Initialize neural network
 network = NeuralNetwork()

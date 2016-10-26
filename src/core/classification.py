@@ -9,7 +9,7 @@ class Classification:
         self.tree_refill = self.create_tree(train_refill)
 
     @staticmethod
-    def create_tree(self, training_set):
+    def create_tree(training_set):
         """Load file with training set and create decision tree
         based on acquired data."""
         defined = open(training_set, "r")

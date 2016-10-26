@@ -1,5 +1,5 @@
 import math
-from src.structure.pqueue import PriorityQueue
+from src.model.pqueue import PriorityQueue
 
 
 def heuristic(a, b):

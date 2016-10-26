@@ -68,7 +68,7 @@ class Neuron:
         gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         # get a bi-level (binary) image out of a gray scale image
         ret, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV)
-        contours, h = cv2.findContours(thresh, cv2.RETR_LIST,
+        _, contours, h = cv2.findContours(thresh, cv2.RETR_LIST,
                                        cv2.CHAIN_APPROX_SIMPLE)
 
         for cnt in contours:

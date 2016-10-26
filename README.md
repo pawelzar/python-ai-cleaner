@@ -28,7 +28,7 @@ Dependencies (Linux)
 1) To start this project, first create virtualenv using python2. You need to have virtualenv module installed. Example command:
 
 ```
-python2 -m virtual venv
+python2 -m virtualenv venv
 ```
 
 2) To activate your local environment use this command:
@@ -59,5 +59,5 @@ source venv/bin/activate
 2) Simply run the main file from "src" directory:
 
 ```
-main.py
+python main.py
 ```

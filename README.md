@@ -12,7 +12,7 @@ Applied algorithms:
 - Neural network - to recognize dirt by image
 
 Requirements
-------------
+-----
 Used libraries:
 - pygame 1.9.2
 - numpy 1.11.0
@@ -20,3 +20,44 @@ Used libraries:
 - cv2 1.0
 
 Project was developed using Python 2.7.11
+
+
+Dependencies (Linux)
+-----
+
+1) To start this project, first create virtualenv using python2. You need to have virtualenv module installed. Example command:
+
+```
+python2 -m virtual venv
+```
+
+2) To activate your local environment use this command:
+
+```
+source venv/bin/activate
+```
+
+After this "(venv)" should appear on the left of the prompt.
+
+3) Now you can install all the requiremenets for the project. This should work:
+
+```
+pip install -r requirements.txt
+```
+
+Running the project
+-----
+
+To run the project do as follows:
+
+1) Activate your local environment (if it is not activated already):
+
+```
+source venv/bin/activate
+```
+
+2) Simply run the main file from "src" directory:
+
+```
+main.py
+```

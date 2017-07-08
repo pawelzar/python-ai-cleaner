@@ -6,16 +6,23 @@ class Grid(object):
         self.objects = {}
 
     def in_bounds(self, point):
-        """Return whether point is located inside the board."""
+        """
+        Return whether point is located inside the board.
+        """
         (x, y) = point
         return 0 <= x < self.width and 0 <= y < self.height
 
     def passable(self, point):
-        """Return whether the agent may go through the point."""
+        """
+        Return whether the agent may go through the point.
+        """
         return point not in self.obstacles
 
     def neighbors(self, point):
-        """Return closest points (distanced by 1 cell in every direction) through which the agent may go."""
+        """
+        Return closest points (distanced by 1 cell in every direction) through
+        which the agent may go.
+        """
         (x, y) = point
         results = [(x+1, y), (x, y-1), (x-1, y), (x, y+1)]
         results = filter(self.in_bounds, results)
@@ -23,11 +30,15 @@ class Grid(object):
         return results
 
     def add_obstacle(self, point):
-        """Specify character for the point, through which the agent cannot go."""
+        """
+        Specify character for the point, through which the agent cannot go.
+        """
         self.obstacles[point] = '#'
 
     def add_object(self, point, character):
-        """Assign the character to the given point on the board."""
+        """
+        Assign the character to the given point on the board.
+        """
         self.objects[point] = character
 
 
@@ -37,9 +48,13 @@ class GridWithWeights(Grid):
         self.weights = {}
 
     def cost(self, from_node, to_node):
-        """Return weight of the node, if none return 1."""
+        """
+        Return weight of the node. Return 1 if weight is not specified.
+        """
         return self.weights.get(to_node, 1)
 
     def add_weight(self, point, weight):
-        """Assign the weight to the given point on the board."""
+        """
+        Assign the weight to the given point on the board.
+        """
         self.weights[point] = weight

@@ -1,4 +1,4 @@
-from src.extra.settings import CELL_HEIGHT, CELL_WIDTH
+from settings import CELL_HEIGHT, CELL_WIDTH
 
 
 class Object(object):
@@ -7,31 +7,39 @@ class Object(object):
         self.position = position
         self.size = size
 
-    # @property
+    @property
     def pos_x(self):
-        """Return horizontal position on the board."""
+        """
+        Return horizontal position on the board.
+        """
         return self.position[0]
 
-    # @property
+    @property
     def pos_y(self):
-        """Return vertical position on the board."""
+        """
+        Return vertical position on the board.
+        """
         return self.position[1]
 
-    def get_width(self):
-        """Return number of cells occupied horizontally
-        by the object on the board."""
+    @property
+    def width(self):
+        """
+        Return number of cells occupied horizontally
+        by the object on the board.
+        """
         return self.size[0] // CELL_WIDTH
 
-    def get_height(self):
-        """Return number of cells occupied vertically
-        by the object on the board."""
+    @property
+    def height(self):
+        """
+        Return number of cells occupied vertically
+        by the object on the board.
+        """
         return self.size[1] // CELL_HEIGHT
 
-    # @property
+    @property
     def screen_position(self):
-        """Return exact position in pixels on the screen."""
-        return self.position[0] * CELL_WIDTH, self.position[1] * CELL_HEIGHT
-
-    def set_position(self, position):
-        """Set the position of the object on the board."""
-        self.position = position
+        """
+        Return exact position in pixels on the screen.
+        """
+        return self.pos_x * CELL_WIDTH, self.pos_y * CELL_HEIGHT

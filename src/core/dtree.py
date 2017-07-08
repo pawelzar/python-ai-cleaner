@@ -3,12 +3,16 @@ def majority_value(data, target_attr):
 
 
 def most_frequent(data):
-    """Return which result is the most common."""
+    """
+    Return which result is the most common.
+    """
     return max(unique(data), key=lambda x: data.count(x))
 
 
 def unique(data):
-    """Return list of unique values for given list."""
+    """
+    Return list of unique values for given list.
+    """
     return list(set(data))
 
 
@@ -32,7 +36,7 @@ def choose_attribute(data, attributes, target_attr, fitness):
 def get_examples(information, attr, value):
     data = information[:]
     out_list = []
-    
+
     if not data:
         return out_list
     else:
@@ -47,8 +51,10 @@ def get_examples(information, attr, value):
 
 
 def get_classification(tree, record):
-    """Return result for given record and tree, where record is a
-    dictionary of attributes and corresponding values."""
+    """
+    Return result for given record and tree, where record is a
+    dictionary of attributes and corresponding values.
+    """
     if isinstance(tree, str):
         return tree
     else:

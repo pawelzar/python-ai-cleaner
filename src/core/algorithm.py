@@ -1,22 +1,31 @@
 import math
-from src.model.pqueue import PriorityQueue
+
+from model.pqueue import PriorityQueue
 
 
 def heuristic(a, b):
-    """Return absolute distance from point a to b.
-    Strictly horizontal and/or vertical path."""
-    (x1, y1) = a
-    (x2, y2) = b
-    return abs(x1 - x2) + abs(y1 - y2)
+    """
+    Return absolute distance from point a to b.
+    Strictly horizontal and/or vertical path.
+    """
+    (x_1, y_1) = a
+    (x_2, y_2) = b
+    return abs(x_1 - x_2) + abs(y_1 - y_2)
 
 
 def euclidean(a, b):
-    """Return Euclidean distance from point a to point b."""
-    return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
+    """
+    Return Euclidean distance from point a to point b.
+    """
+    (x_1, y_1) = a
+    (x_2, y_2) = b
+    return math.sqrt((x_1 - x_2) ** 2 + (y_1 - y_2) ** 2)
 
 
 def count_cost(start, goal, state):
-    """Return cost of agent's move, including rotations."""
+    """
+    Return cost of agent move, including rotations.
+    """
     (x, y) = start
     (x_next, y_next) = goal
     new_state = state
@@ -75,13 +84,15 @@ def count_cost(start, goal, state):
 
 
 def a_star_search(graph, start, goal, state='up'):
-    """Return list of points, which is the path created by A* algorithm."""
+    """
+    Return list of points, which is the path created by A* algorithm.
+    """
     frontier = PriorityQueue()
     frontier.put(start, 0)
     came_from = {start: None}
     cost_so_far = {start: 0}
 
-    while not frontier.empty():
+    while not frontier.empty:
         current = frontier.get()
 
         if current == goal:
@@ -89,8 +100,11 @@ def a_star_search(graph, start, goal, state='up'):
 
         for position in graph.neighbors(current):
             state, rotate_cost = count_cost(current, position, state)
-            new_cost = cost_so_far[current] + \
-                graph.cost(current, position) + abs(rotate_cost)
+            new_cost = (
+                cost_so_far[current] +
+                graph.cost(current, position) +
+                abs(rotate_cost)
+            )
             if position not in cost_so_far or new_cost < cost_so_far[position]:
                 cost_so_far[position] = new_cost
                 priority = new_cost + heuristic(goal, position)
@@ -101,19 +115,24 @@ def a_star_search(graph, start, goal, state='up'):
 
 
 def reconstruct_path(came_from, start, goal):
-    """Return list of points that represents
-    the path created by A* algorithm."""
+    """
+    Return list of points that represents the path created by A* algorithm.
+    """
     current = goal
     path = [current]
+
     while current != start:
         current = came_from[current]
         path.append(current)
     path.reverse()
+
     return path
 
 
 def path_as_states(path):
-    """Return list of move directions for the agent."""
+    """
+    Return list of move directions for the agent.
+    """
     states = []
     (x_prev, y_prev) = path[0]
 
@@ -132,7 +151,9 @@ def path_as_states(path):
 
 
 def path_as_orders(path, rotation=0):
-    """Return list of move directions for the agent."""
+    """
+    Return list of move directions for the agent.
+    """
     # state = {0: 'up', 90: 'right', 180: 'down', -90: 'left'}.get(rotation)
     state = 'up'
     states = []

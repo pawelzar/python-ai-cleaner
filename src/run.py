@@ -14,27 +14,27 @@ from utils import file_path
 
 
 # Initialize neural network
-network = NeuralNetwork()
+NETWORK = NeuralNetwork()
 
 
 # Initialize classification (creates decision tree based on training set)
-classification = Classification(
+CLASSIFICATION = Classification(
     file_path('media.training_sets', 'train_cleaning'),
     file_path('media.training_sets', 'train_refill'),
 )
-classification.draw_cleaning_tree()
-classification.draw_refill_tree()
+CLASSIFICATION.draw_cleaning_tree()
+CLASSIFICATION.draw_refill_tree()
 
 
 # Initialize display
 pygame.init()
 pygame.display.set_caption('PRO CLEANER 9000')
-screen = pygame.display.set_mode(SCREEN_SIZE)
-clock = pygame.time.Clock()
+SCREEN = pygame.display.set_mode(SCREEN_SIZE)
+CLOCK = pygame.time.Clock()
 
 
 # Load paths of images
-images = {
+IMAGES = {
     'floor': file_path('media.images', 'floor_cell.jpg'),
     'agent': file_path('media.images', 'cleaner.png'),
     'bin': file_path('media.images', 'bin.png'),
@@ -50,21 +50,21 @@ images = {
 
 
 # Load every image, use transparency for png images
-loaded_images = {
+LOADED_IMAGES = {
     name: pygame.image.load(path).convert_alpha()
-    for name, path in images.items()
+    for name, path in IMAGES.items()
 }
 
 
 # Load special images (with rotation, scaled)
-loaded_images['chair_left'] = pygame.transform.rotate(
-    pygame.image.load(images['chair']).convert_alpha(), -90
+LOADED_IMAGES['chair_left'] = pygame.transform.rotate(
+    pygame.image.load(IMAGES['chair']).convert_alpha(), -90
 )
-loaded_images['chair_right'] = pygame.transform.rotate(
-    pygame.image.load(images['chair']).convert_alpha(), 90
+LOADED_IMAGES['chair_right'] = pygame.transform.rotate(
+    pygame.image.load(IMAGES['chair']).convert_alpha(), 90
 )
-loaded_images['floor'] = pygame.transform.scale(
-    pygame.image.load(images['floor']).convert_alpha(),
+LOADED_IMAGES['floor'] = pygame.transform.scale(
+    pygame.image.load(IMAGES['floor']).convert_alpha(),
     (CELL_WIDTH - CELL_MARGIN, CELL_HEIGHT - CELL_MARGIN)
 )
 
@@ -75,28 +75,28 @@ BOARD = GameBoard(GRID_WIDTH, GRID_HEIGHT)
 
 # Add objects to the board
 BOARD.add_furniture([
-    Object('chair', (0, 3), loaded_images['chair'].get_size()),
-    Object('chair_left', (7, 5), loaded_images['chair_left'].get_size()),
-    Object('chair_right', (15, 5), loaded_images['chair_right'].get_size()),
-    Object('sofa', (9, 8), loaded_images['sofa'].get_size()),
-    Object('desk', (10, 2), loaded_images['desk'].get_size()),
-    Object('palm', (17, 1), loaded_images['palm'].get_size()),
-    Object('palm', (17, 9), loaded_images['palm'].get_size()),
+    Object('chair', (0, 3), LOADED_IMAGES['chair'].get_size()),
+    Object('chair_left', (7, 5), LOADED_IMAGES['chair_left'].get_size()),
+    Object('chair_right', (15, 5), LOADED_IMAGES['chair_right'].get_size()),
+    Object('sofa', (9, 8), LOADED_IMAGES['sofa'].get_size()),
+    Object('desk', (10, 2), LOADED_IMAGES['desk'].get_size()),
+    Object('palm', (17, 1), LOADED_IMAGES['palm'].get_size()),
+    Object('palm', (17, 9), LOADED_IMAGES['palm'].get_size()),
 ])
 BOARD.add_station(
-    Object('station', (0, 0), loaded_images['station'].get_size())
+    Object('station', (0, 0), LOADED_IMAGES['station'].get_size())
 )
 BOARD.add_bin(
-    Object('bin', (0, GRID_HEIGHT - 1), loaded_images['bin'].get_size())
+    Object('bin', (0, GRID_HEIGHT - 1), LOADED_IMAGES['bin'].get_size())
 )
 
-BOARD.assign_images(loaded_images)
-BOARD.assign_screen(screen)
+BOARD.assign_images(LOADED_IMAGES)
+BOARD.assign_screen(SCREEN)
 
 
 # Initialize cleaner
-AGENT = Cleaner('agent', (0, 0), images['agent'])
-AGENT.initialize(BOARD, screen, network, classification, images)
+AGENT = Cleaner('agent', (0, 0), IMAGES['agent'])
+AGENT.initialize(BOARD, SCREEN, NETWORK, CLASSIFICATION, IMAGES)
 
 
 # Add dirt objects at random positions (number of objects as parameter)
@@ -186,7 +186,7 @@ while PLAY:
     BOARD.draw()
     AGENT.draw()
 
-    clock.tick(60)  # frames per second
+    CLOCK.tick(60)  # frames per second
     pygame.display.update()
 
 pygame.quit()

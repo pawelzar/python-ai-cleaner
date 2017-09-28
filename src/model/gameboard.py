@@ -233,5 +233,5 @@ class GameBoard(GridWithWeights):
         """
         Print nice looking grid in console.
         """
-        print('\nCURRENT GAME BOARD')
+        print '\nCURRENT GAME BOARD'
         draw_grid(self)

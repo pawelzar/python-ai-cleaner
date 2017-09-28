@@ -34,8 +34,8 @@ def draw_grid(graph, **style):
     - goal - print special character for goal point
     """
     for y in range(graph.height):
-        print(''.join(
-            draw_point(graph, (x, y), style) for x in range(graph.width))
+        print ''.join(
+            draw_point(graph, (x, y), style) for x in range(graph.width)
         )
 
 
@@ -44,4 +44,4 @@ def draw_tree(tree):
     Print every node of the tree in separate line.
     """
     for i, node in enumerate(str(tree).split('{')):
-        print(str(node).strip('}'))
+        print str(node).strip('}')

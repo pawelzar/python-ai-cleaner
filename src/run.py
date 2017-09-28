@@ -5,7 +5,6 @@ from core.neuron import NeuralNetwork
 from model.cleaner import Cleaner
 from model.gameboard import GameBoard
 from model.object import Object
-from genetic.optimize import optimize_route
 from settings import (
     CELL_MARGIN, CELL_HEIGHT, CELL_WIDTH, DIR_DOWN, DIR_LEFT,
     DIR_RIGHT, DIR_UP, GRID_HEIGHT, GRID_WIDTH, SCREEN_SIZE

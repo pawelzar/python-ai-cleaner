@@ -27,9 +27,11 @@ def gain(data, attr, target_attr):
         else:
             val_freq[record[attr]] = 1.0
 
-    for val in val_freq.keys():
-        val_prob = val_freq[val] / sum(val_freq.values())
-        data_subset = [record for record in data if record[attr] == val]
+    val_sum = sum(val_freq.values())
+
+    for key, val in val_freq.items():
+        val_prob = val / val_sum
+        data_subset = [record for record in data if record[attr] == key]
         subset_entropy += val_prob * entropy(data_subset, target_attr)
 
     return entropy(data, target_attr) - subset_entropy

@@ -3,8 +3,7 @@ def fuzzy_distance(distance):
         return 'close'
     elif distance < 14:
         return 'medium'
-    else:
-        return 'far'
+    return 'far'
 
 
 def fuzzy_soap(soap):
@@ -12,8 +11,7 @@ def fuzzy_soap(soap):
         return 'low'
     elif soap < 70:
         return 'medium'
-    else:
-        return 'high'
+    return 'high'
 
 
 def fuzzy_battery(battery):
@@ -21,8 +19,7 @@ def fuzzy_battery(battery):
         return 'low'
     elif battery < 90:
         return 'medium'
-    else:
-        return 'high'
+    return 'high'
 
 
 def fuzzy_container(container):
@@ -30,5 +27,4 @@ def fuzzy_container(container):
         return 'empty'
     elif container < 90:
         return 'half'
-    else:
-        return 'full'
+    return 'full'

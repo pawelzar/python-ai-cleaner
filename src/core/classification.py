@@ -55,9 +55,9 @@ class Classification:
         return get_classification(self.tree_refill, collection)
 
     def draw_cleaning_tree(self):
-        print('\nDECISION TREE (CLEANING)')
+        print '\nDECISION TREE (CLEANING)'
         draw(self.tree_clean)
 
     def draw_refill_tree(self):
-        print('\nDECISION TREE (REFILL)')
+        print '\nDECISION TREE (REFILL)'
         draw(self.tree_refill)

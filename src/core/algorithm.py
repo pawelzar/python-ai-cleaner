@@ -150,7 +150,7 @@ def path_as_states(path):
     return states
 
 
-def path_as_orders(path, rotation=0):
+def path_as_orders(path):  # rotation=0
     """
     Return list of move directions for the agent.
     """

@@ -78,14 +78,14 @@ class Cleaner(Object):
         agent collected data, False otherwise.
         """
         if self.board.dirt and not self.data:
-            print('\nNO INFORMATION ABOUT DIRT, LAUNCH RECOGNITION PROCESS.')
+            print '\nNO INFORMATION ABOUT DIRT, LAUNCH RECOGNITION PROCESS.'
         elif not self.board.dirt:
-            print('\nCLEAN AS A WHISTLE, SIR!')
+            print '\nCLEAN AS A WHISTLE, SIR!'
         elif self.clean_all:
-            print('\nCLEANING STOPPED')
+            print '\nCLEANING STOPPED'
             self.clean_all = False
         else:
-            print('\nCLEANING...')
+            print '\nCLEANING...'
             self.clean_all = True
 
     def move(self, vector):
@@ -136,7 +136,7 @@ class Cleaner(Object):
         Reload agent attributes.
         """
         if self.position == self.board.station.position:
-            print('\nAGENT RELOADED IN DOCKING STATION.')
+            print '\nAGENT RELOADED IN DOCKING STATION.'
             self.battery = MAX_BATTERY
             self.soap = MAX_SOAP
             # self.container = 0
@@ -146,7 +146,7 @@ class Cleaner(Object):
         Leave all dirt in basket.
         """
         if self.position == self.board.basket.position:
-            print('\nAGENT THREW DIRT TO RUBBISH BIN.')
+            print '\nAGENT THREW DIRT TO RUBBISH BIN.'
             self.container = 0
 
     def recognize(self, position=('', )):
@@ -164,7 +164,7 @@ class Cleaner(Object):
             test = Neuron(cv2.imread(image))
             test.prepare()
             recognition = self.network.test_network(test)
-            print('{} is {}'.format(position, recognition))
+            print '{} is {}'.format(position, recognition)
 
         if recognition:
             self.data[position] = recognition
@@ -175,16 +175,16 @@ class Cleaner(Object):
         on the screen and save it if the object is dirt.
         """
         self.data = dict()
-        print('\nCOLLECTING DATA...')
+        print '\nCOLLECTING DATA...'
 
         for y in range(self.board.height):
             for x in range(self.board.width):
                 self.recognize((x, y))
 
         if not self.data:
-            print('\nSORRY, THERE IS NOTHING TO CLEAN.')
+            print '\nSORRY, THERE IS NOTHING TO CLEAN.'
         else:
-            print('\nCOLLECTED INFORMATION ABOUT DIRT.')
+            print '\nCOLLECTED INFORMATION ABOUT DIRT.'
 
     def move_to(self, point_goal, static_board=True, draw=True):
         """
@@ -199,17 +199,17 @@ class Cleaner(Object):
         self.board.point_goal = point_goal
 
         if draw:
-            print('\nPATH FROM POINT {} to {}'.format(
+            print '\nPATH FROM POINT {} to {}'.format(
                 self.position, point_goal
-            ))
+            )
 
             draw_grid(
                 self.board, path=reconstruction,
                 start=self.position, goal=point_goal
             )
 
-            print('\nORDERS FOR AGENT TO MOVE')
-            print(', '.join(path_as_orders(reconstruction)))
+            print '\nORDERS FOR AGENT TO MOVE'
+            print ', '.join(path_as_orders(reconstruction))
 
         # [up, right, down, left] - clockwise
         directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]
@@ -270,12 +270,12 @@ class Cleaner(Object):
         elif not self.board.dirt:
             # if agent collected all the information and cleaned all dirt
             # from the board
-            print('\nCLEANING COMPLETED.')
+            print '\nCLEANING COMPLETED.'
             self.clean_all = False
         else:
             # there is still some dirt on the board, but the agent didn't
             # collect information about it
-            print('\nNO INFORMATION ABOUT DIRT.')
+            print '\nNO INFORMATION ABOUT DIRT.'
             self.clean_all = False
 
     def decide_to_clean(self, position, item):
@@ -378,12 +378,12 @@ class Cleaner(Object):
             self.empty_container()
             self.go_to_station()
             self.reload()
-            print('\nCLEANING COMPLETED.')
+            print '\nCLEANING COMPLETED.'
             self.clean_all = False
         else:
             # there is still some dirt on the board, but the agent didn't
             # collect information about it
-            print('\nNO INFORMATION ABOUT DIRT.')
+            print '\nNO INFORMATION ABOUT DIRT.'
             self.clean_all = False
 
     def draw(self):
@@ -415,10 +415,8 @@ class Cleaner(Object):
         """
         Print current cleaner parameters in console.
         """
-        print(
-            'battery: {}/150, soap: {}/100, container {}/100'.format(
-                self.battery, self.soap, self.container
-            )
+        print 'battery: {}/150, soap: {}/100, container {}/100'.format(
+            self.battery, self.soap, self.container
         )
 
     def optimize_path(self):

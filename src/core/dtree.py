@@ -6,7 +6,7 @@ def most_frequent(data):
     """
     Return which result is the most common.
     """
-    return max(unique(data), key=lambda x: data.count(x))
+    return max(unique(data), key=data.count)
 
 
 def unique(data):
@@ -39,15 +39,15 @@ def get_examples(information, attr, value):
 
     if not data:
         return out_list
-    else:
-        record = data.pop()
-        if record[attr] == value:
-            out_list.append(record)
-            out_list.extend(get_examples(data, attr, value))
-            return out_list
-        else:
-            out_list.extend(get_examples(data, attr, value))
-            return out_list
+
+    record = data.pop()
+    if record[attr] == value:
+        out_list.append(record)
+        out_list.extend(get_examples(data, attr, value))
+        return out_list
+
+    out_list.extend(get_examples(data, attr, value))
+    return out_list
 
 
 def get_classification(tree, record):
@@ -57,10 +57,10 @@ def get_classification(tree, record):
     """
     if isinstance(tree, str):
         return tree
-    else:
-        attr = tree.keys()[0]
-        subtree = tree[attr][record[attr]]
-        return get_classification(subtree, record)
+
+    attr = tree.keys()[0]
+    subtree = tree[attr][record[attr]]
+    return get_classification(subtree, record)
 
 
 def create_decision_tree(data, attributes, target_attr, fitness_func):
@@ -78,8 +78,9 @@ def create_decision_tree(data, attributes, target_attr, fitness_func):
         for val in get_values(data, best):
             subtree = create_decision_tree(
                 get_examples(data, best, val),
-                filter(lambda x: x != best, attributes),
-                target_attr, fitness_func)
+                [x for x in attributes if x != best],
+                target_attr, fitness_func
+            )
             tree[best][val] = subtree
 
     return tree

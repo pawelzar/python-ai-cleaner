@@ -128,7 +128,7 @@ class GameBoard(GridWithWeights):
         """
         Remove all dirt from the board, including weights.
         """
-        for i, item in enumerate(self.dirt):
+        for item in self.dirt:
             del self.objects[item.position]
             del self.weights[item.position]
         self.dirt = []
@@ -146,7 +146,7 @@ class GameBoard(GridWithWeights):
         - weight - this will influence on creating path by an algorithm (A*)
         - amount - number of objects to be generated
         """
-        for i in range(amount):
+        for _ in range(amount):
             (x, y) = (
                 randrange(0, self.width, 1), randrange(0, self.height, 1)
             )

@@ -47,11 +47,11 @@ class GridWithWeights(Grid):
         super(GridWithWeights, self).__init__(width, height)
         self.weights = {}
 
-    def cost(self, from_node, to_node):
+    def cost(self, node):
         """
-        Return weight of the node. Return 1 if weight is not specified.
+        Return weight of node. Defaults to 1 if not specified.
         """
-        return self.weights.get(to_node, 1)
+        return self.weights.get(node, 1)
 
     def add_weight(self, point, weight):
         """

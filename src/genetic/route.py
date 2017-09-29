@@ -1,5 +1,5 @@
 import random
-from core.algorithm import euclidean, heuristic
+from core.algorithm import euclidean
 
 
 class Route(object):

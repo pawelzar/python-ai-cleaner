@@ -101,9 +101,7 @@ def a_star_search(graph, start, goal, state='up'):
         for position in graph.neighbors(current):
             state, rotate_cost = count_cost(current, position, state)
             new_cost = (
-                cost_so_far[current] +
-                graph.cost(current, position) +
-                abs(rotate_cost)
+                cost_so_far[current] + graph.cost(position) + abs(rotate_cost)
             )
             if position not in cost_so_far or new_cost < cost_so_far[position]:
                 cost_so_far[position] = new_cost

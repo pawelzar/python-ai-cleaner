@@ -43,5 +43,5 @@ def draw_tree(tree):
     """
     Print every node of the tree in separate line.
     """
-    for i, node in enumerate(str(tree).split('{')):
+    for node in str(tree).split('{'):
         print str(node).strip('}')

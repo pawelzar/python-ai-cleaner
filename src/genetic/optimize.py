@@ -24,7 +24,7 @@ def optimize_route(objects, generations, crossover_chance, mutation_chance,
     #     # print ga.get_best_solution().get_length(), best_initial
     #     ga.evolve()
 
-    for i in range(generations):
+    for _ in range(generations):
         ga.evolve()
 
     print '\nLAST GENERATION'

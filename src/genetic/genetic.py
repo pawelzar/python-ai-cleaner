@@ -15,7 +15,7 @@ class GeneticAlgorithm(object):
         """
         solutions = [
             solution_generator.generate()
-            for i in range(self.population)
+            for _ in range(self.population)
         ]
         return solutions
 

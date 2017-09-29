@@ -3,7 +3,7 @@ from core.id3 import gain
 from extra.draw import draw_tree as draw
 
 
-class Classification:
+class Classification(object):
     def __init__(self, train_cleaning, train_refill):
         self.tree_clean = self.create_tree(train_cleaning)
         self.tree_refill = self.create_tree(train_refill)

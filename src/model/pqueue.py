@@ -1,7 +1,7 @@
 import heapq
 
 
-class PriorityQueue:
+class PriorityQueue(object):
     def __init__(self):
         self.elements = []
 

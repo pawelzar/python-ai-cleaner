@@ -10,7 +10,7 @@ from pybrain.tools.shortcuts import buildNetwork
 from utils import file_path
 
 
-class NeuralNetwork:
+class NeuralNetwork(object):
     def __init__(self):
         self.code = {
             'cat': [1, 0, 0],
@@ -68,7 +68,7 @@ class NeuralNetwork:
                 return key
 
 
-class Neuron:
+class Neuron(object):
     def __init__(self, img):
         self.img = img
         self.height, self.width, self.depth = self.img.shape

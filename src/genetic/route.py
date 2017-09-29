@@ -2,7 +2,7 @@ import random
 from core.algorithm import euclidean, heuristic
 
 
-class Route:
+class Route(object):
     def __init__(self, objects):
         self.objects = objects
 
@@ -65,7 +65,7 @@ class Route:
         return Route(self.objects[:])
 
 
-class RouteGenerator:
+class RouteGenerator(object):
     def __init__(self, objects):
         self.objects = objects
 

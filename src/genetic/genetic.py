@@ -1,7 +1,7 @@
 import random
 
 
-class GeneticAlgorithm:
+class GeneticAlgorithm(object):
     def __init__(self, solution_generator, crossover_chance, mutation_chance,
                  population):
         self.crossover_chance = crossover_chance

@@ -1,0 +1,5 @@
+[MASTER]
+ignore = settings
+
+[MESSAGES CONTROL]
+disable = R0902,R0903,R0904,R0913

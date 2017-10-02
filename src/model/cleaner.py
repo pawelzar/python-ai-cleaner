@@ -107,7 +107,7 @@ class Cleaner(Object):
         """
         closest = GRID_WIDTH * GRID_HEIGHT  # maximum possible distance
         closest_pos = self.board.station.position
-        for item in self.data.keys():
+        for item in self.data:
             distance = (
                 abs(self.position[0] - item[0]) +
                 abs(self.position[1] - item[1])
